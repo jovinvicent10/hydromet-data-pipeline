@@ -38,3 +38,7 @@ data/external/*
 !data/interim/.gitkeep
 !data/processed/.gitkeep
 !data/external/.gitkeep
+
+# Local database files
+*.duckdb
+*.duckdb.wal
