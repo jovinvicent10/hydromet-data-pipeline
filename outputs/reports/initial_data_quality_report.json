@@ -1,0 +1,48 @@
+{
+    "dataset": {
+        "rows": 73048,
+        "columns": 14,
+        "locations": 8,
+        "start_date": "2001-01-01 00:00:00",
+        "end_date": "2025-12-31 00:00:00"
+    },
+    "quality_checks": {
+        "invalid_dates": 0,
+        "exact_duplicate_rows": 0,
+        "duplicate_location_date_rows": 0,
+        "temperature_consistency_violations": 0,
+        "invalid_relative_humidity": 0,
+        "negative_precipitation": 0,
+        "negative_wind_speed": 0,
+        "negative_solar_radiation": 0,
+        "invalid_coordinates": 0
+    },
+    "missing_values": {
+        "T2M": 0,
+        "T2M_MIN": 0,
+        "T2M_MAX": 0,
+        "RH2M": 0,
+        "PRECTOTCORR": 0,
+        "WS2M": 0,
+        "ALLSKY_SFC_SW_DWN": 0
+    },
+    "sentinel_values": {
+        "T2M": {},
+        "T2M_MIN": {},
+        "T2M_MAX": {},
+        "RH2M": {},
+        "PRECTOTCORR": {},
+        "WS2M": {},
+        "ALLSKY_SFC_SW_DWN": {}
+    },
+    "missing_days_by_location": {
+        "Arusha": 0,
+        "Dar_es_Salaam": 0,
+        "Dodoma": 0,
+        "Mbeya": 0,
+        "Morogoro": 0,
+        "Mwanza": 0,
+        "Songea": 0,
+        "Tabora": 0
+    }
+}

@@ -1,0 +1,7 @@
+dimension,problem,count
+Completeness,Missing daily dates,0
+Uniqueness,Duplicate location-date records,0
+Consistency,Invalid min/mean/max temperature ordering,0
+Validity,Relative humidity outside 0–100%,0
+Validity,Negative precipitation values,0
+Validity,Negative wind-speed values,0
