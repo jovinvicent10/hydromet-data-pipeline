@@ -1,0 +1,16 @@
+project:
+  name: "HydroMet-ETL"
+  study_area: "Tanzania"
+  description: "Reproducible hydrometeorological data engineering pipeline"
+
+data:
+  source: "NASA POWER"
+  temporal_resolution: "daily"
+  start_date: "2001-01-01"
+  end_date: "2025-12-31"
+
+paths:
+  raw: "data/raw"
+  interim: "data/interim"
+  processed: "data/processed"
+  outputs: "outputs"
