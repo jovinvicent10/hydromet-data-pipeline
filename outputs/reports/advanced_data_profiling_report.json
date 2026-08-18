@@ -1,0 +1,291 @@
+{
+    "dataset": {
+        "rows": 73048,
+        "locations": 8,
+        "start_date": "2001-01-01 00:00:00",
+        "end_date": "2025-12-31 00:00:00"
+    },
+    "baseline_quality": {
+        "invalid_dates": 0,
+        "exact_duplicates": 0,
+        "duplicate_location_date_rows": 0,
+        "ordinary_missing_meteo_values": 0
+    },
+    "spatial_coverage": {
+        "sampled_locations": 8,
+        "latitude_min": -10.6822,
+        "latitude_max": -2.5164,
+        "longitude_min": 32.8266,
+        "longitude_max": 39.2083,
+        "latitude_span_degrees": 8.1658,
+        "longitude_span_degrees": 6.381700000000002
+    },
+    "source_diversity": {
+        "number_of_source_labels": 1,
+        "single_source_dependency": true
+    },
+    "coverage_profile": {
+        "records": 73048,
+        "years_covered": 25,
+        "locations": 8,
+        "daily_temporal_resolution": true,
+        "nationally_exhaustive_spatial_coverage": false,
+        "coverage_note": "The current extract represents eight configured point locations. It should not be described as exhaustive national spatial coverage."
+    },
+    "iqr_outliers": {
+        "T2M": {
+            "q1": 20.55,
+            "q3": 24.83,
+            "iqr": 4.279999999999998,
+            "lower_bound": 14.130000000000004,
+            "upper_bound": 31.249999999999993,
+            "outlier_count": 1636,
+            "outlier_percent": 2.2396232614171505
+        },
+        "T2M_MIN": {
+            "q1": 15.01,
+            "q3": 20.08,
+            "iqr": 5.0699999999999985,
+            "lower_bound": 7.405000000000002,
+            "upper_bound": 27.684999999999995,
+            "outlier_count": 1037,
+            "outlier_percent": 1.4196145000547584
+        },
+        "T2M_MAX": {
+            "q1": 25.94,
+            "q3": 30.31,
+            "iqr": 4.369999999999997,
+            "lower_bound": 19.385000000000005,
+            "upper_bound": 36.864999999999995,
+            "outlier_count": 344,
+            "outlier_percent": 0.47092322856204144
+        },
+        "RH2M": {
+            "q1": 61.93,
+            "q3": 81.37,
+            "iqr": 19.440000000000005,
+            "lower_bound": 32.769999999999996,
+            "upper_bound": 110.53000000000002,
+            "outlier_count": 109,
+            "outlier_percent": 0.14921695323622822
+        },
+        "PRECTOTCORR": {
+            "q1": 0.03,
+            "q3": 3.23,
+            "iqr": 3.2,
+            "lower_bound": -4.7700000000000005,
+            "upper_bound": 8.030000000000001,
+            "outlier_count": 8350,
+            "outlier_percent": 11.43083999561932
+        },
+        "WS2M": {
+            "q1": 1.59,
+            "q3": 3.53,
+            "iqr": 1.9399999999999997,
+            "lower_bound": -1.3199999999999996,
+            "upper_bound": 6.4399999999999995,
+            "outlier_count": 156,
+            "outlier_percent": 0.21355820830139088
+        },
+        "ALLSKY_SFC_SW_DWN": {
+            "q1": 17.77,
+            "q3": 23.62,
+            "iqr": 5.850000000000001,
+            "lower_bound": 8.994999999999997,
+            "upper_bound": 32.395,
+            "outlier_count": 897,
+            "outlier_percent": 1.2279596977329974
+        }
+    },
+    "temperature_daily_change_99_9_percentile": 3.2696099999999566,
+    "precipitation_daily_change_99_9_percentile": 90.5791899999966,
+    "cross_location_uniformity": [
+        {
+            "variable": "T2M",
+            "days_identical_across_all_locations": 0,
+            "percent_of_dates": 0.0
+        },
+        {
+            "variable": "T2M_MIN",
+            "days_identical_across_all_locations": 0,
+            "percent_of_dates": 0.0
+        },
+        {
+            "variable": "T2M_MAX",
+            "days_identical_across_all_locations": 0,
+            "percent_of_dates": 0.0
+        },
+        {
+            "variable": "RH2M",
+            "days_identical_across_all_locations": 0,
+            "percent_of_dates": 0.0
+        },
+        {
+            "variable": "PRECTOTCORR",
+            "days_identical_across_all_locations": 11,
+            "percent_of_dates": 0.12046873288796409
+        },
+        {
+            "variable": "WS2M",
+            "days_identical_across_all_locations": 0,
+            "percent_of_dates": 0.0
+        },
+        {
+            "variable": "ALLSKY_SFC_SW_DWN",
+            "days_identical_across_all_locations": 0,
+            "percent_of_dates": 0.0
+        }
+    ],
+    "longest_stale_sequences": [
+        {
+            "location": "Mbeya",
+            "variable": "PRECTOTCORR",
+            "longest_identical_run_days": 73
+        },
+        {
+            "location": "Songea",
+            "variable": "PRECTOTCORR",
+            "longest_identical_run_days": 52
+        },
+        {
+            "location": "Tabora",
+            "variable": "PRECTOTCORR",
+            "longest_identical_run_days": 52
+        },
+        {
+            "location": "Dodoma",
+            "variable": "PRECTOTCORR",
+            "longest_identical_run_days": 41
+        },
+        {
+            "location": "Mwanza",
+            "variable": "PRECTOTCORR",
+            "longest_identical_run_days": 15
+        },
+        {
+            "location": "Morogoro",
+            "variable": "PRECTOTCORR",
+            "longest_identical_run_days": 14
+        },
+        {
+            "location": "Arusha",
+            "variable": "PRECTOTCORR",
+            "longest_identical_run_days": 12
+        },
+        {
+            "location": "Dar_es_Salaam",
+            "variable": "PRECTOTCORR",
+            "longest_identical_run_days": 10
+        },
+        {
+            "location": "Dar_es_Salaam",
+            "variable": "WS2M",
+            "longest_identical_run_days": 3
+        },
+        {
+            "location": "Mbeya",
+            "variable": "WS2M",
+            "longest_identical_run_days": 3
+        },
+        {
+            "location": "Morogoro",
+            "variable": "WS2M",
+            "longest_identical_run_days": 3
+        },
+        {
+            "location": "Arusha",
+            "variable": "T2M_MAX",
+            "longest_identical_run_days": 3
+        },
+        {
+            "location": "Dar_es_Salaam",
+            "variable": "T2M_MIN",
+            "longest_identical_run_days": 3
+        },
+        {
+            "location": "Morogoro",
+            "variable": "T2M",
+            "longest_identical_run_days": 3
+        },
+        {
+            "location": "Tabora",
+            "variable": "T2M",
+            "longest_identical_run_days": 3
+        },
+        {
+            "location": "Tabora",
+            "variable": "T2M_MIN",
+            "longest_identical_run_days": 3
+        },
+        {
+            "location": "Mbeya",
+            "variable": "RH2M",
+            "longest_identical_run_days": 3
+        },
+        {
+            "location": "Dar_es_Salaam",
+            "variable": "T2M_MAX",
+            "longest_identical_run_days": 3
+        },
+        {
+            "location": "Dar_es_Salaam",
+            "variable": "T2M",
+            "longest_identical_run_days": 3
+        },
+        {
+            "location": "Dodoma",
+            "variable": "WS2M",
+            "longest_identical_run_days": 3
+        },
+        {
+            "location": "Arusha",
+            "variable": "T2M",
+            "longest_identical_run_days": 2
+        },
+        {
+            "location": "Arusha",
+            "variable": "ALLSKY_SFC_SW_DWN",
+            "longest_identical_run_days": 2
+        },
+        {
+            "location": "Arusha",
+            "variable": "T2M_MIN",
+            "longest_identical_run_days": 2
+        },
+        {
+            "location": "Arusha",
+            "variable": "RH2M",
+            "longest_identical_run_days": 2
+        },
+        {
+            "location": "Mbeya",
+            "variable": "T2M_MAX",
+            "longest_identical_run_days": 2
+        },
+        {
+            "location": "Mbeya",
+            "variable": "T2M_MIN",
+            "longest_identical_run_days": 2
+        },
+        {
+            "location": "Mbeya",
+            "variable": "T2M",
+            "longest_identical_run_days": 2
+        },
+        {
+            "location": "Dodoma",
+            "variable": "ALLSKY_SFC_SW_DWN",
+            "longest_identical_run_days": 2
+        },
+        {
+            "location": "Dodoma",
+            "variable": "T2M_MAX",
+            "longest_identical_run_days": 2
+        },
+        {
+            "location": "Dodoma",
+            "variable": "RH2M",
+            "longest_identical_run_days": 2
+        }
+    ]
+}

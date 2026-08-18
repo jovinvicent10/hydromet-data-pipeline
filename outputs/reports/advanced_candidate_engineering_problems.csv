@@ -1,0 +1,4 @@
+dimension,problem,evidence,engineering_implication
+Spatial coverage,Limited point-based spatial representation,8 configured locations represent the current Tanzania extract,National or district-level applications may require denser grid-based or administrative-area coverage and scalable spatial ingestion.
+Source resilience / validation,Single-source dependency,1 source label(s) are represented in the current pipeline,Independent cross-source validation is unavailable; adding CHIRPS or another trusted source would require harmonization and lineage controls.
+Extreme-value quality assurance,Statistical extremes require contextual validation,IQR profiling flags 12529 variable-level observations across all meteorological variables; flags are not automatically errors,The pipeline needs explicit quality flags and domain-aware validation rather than automatic deletion of extreme hydrometeorological observations.
