@@ -33,3 +33,35 @@ Transformation → Database / Parquet → Analytics → ML-ready datasets
 ## Project Status
 
 Week 1 — Dataset adoption and initial data quality assessment.
+
+## Data Architecture
+
+HydroMet-ETL uses a dimensional analytical model implemented in
+DuckDB.
+
+### Fact Table
+
+`fact_observation`
+
+Grain:
+
+> One meteorological variable observed at one location on one date
+> from one data source.
+
+### Dimensions
+
+- `dim_date`
+- `dim_location`
+- `dim_variable`
+- `dim_source`
+
+### Quality Assurance
+
+Observation-level quality information is stored separately in
+`fact_quality_flag`, allowing potentially valid environmental extremes
+to be flagged without altering the original observation.
+
+See:
+
+- `docs/database_schema.md`
+- `docs/hydromet_er_diagram.md`
