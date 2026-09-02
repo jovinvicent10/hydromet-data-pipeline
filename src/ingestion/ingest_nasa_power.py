@@ -212,8 +212,20 @@ def load_manifest() -> dict[str, Any]:
         encoding="utf-8",
     ) as file:
 
-        return json.load(file)
+        manifest = json.load(file)
 
+    # Backward compatibility for older manifest structures.
+    manifest.setdefault(
+        "source",
+        "NASA_POWER",
+    )
+
+    manifest.setdefault(
+        "requests",
+        {},
+    )
+
+    return manifest
 
 def save_manifest(
     manifest: dict[str, Any],
@@ -560,16 +572,16 @@ def main() -> None:
     )
 
     manifest = load_manifest()
-    
+
     manifest["pipeline"] = {
-    "name": "HydroMet-ETL",
-    "source": "NASA_POWER",
-    "temporal_resolution": "daily",
-    "start_date": START_DATE,
-    "end_date": END_DATE,
-    "parameter_count": len(PARAMETERS),
-    "location_count": len(LOCATIONS),
-}
+        "name": "HydroMet-ETL",
+        "source": "NASA_POWER",
+        "temporal_resolution": "daily",
+        "start_date": START_DATE,
+        "end_date": END_DATE,
+        "parameter_count": len(PARAMETERS),
+        "location_count": len(LOCATIONS),
+    }
 
     all_frames = []
 
@@ -598,6 +610,9 @@ def main() -> None:
             .get(request_id)
         )
 
+        raw_path = None
+        payload = None
+
         # --------------------------------------------
         # Reuse existing immutable raw file
         # --------------------------------------------
@@ -609,15 +624,35 @@ def main() -> None:
             ) == "success"
         ):
 
-
-            raw_path = (
-                PROJECT_ROOT
-                / existing_entry[
+            raw_file_value = (
+                existing_entry.get(
                     "raw_file"
-                ]
+                )
             )
-            
-            if raw_path.exists():
+
+            if raw_file_value:
+
+                stored_path = Path(
+                    raw_file_value
+                )
+
+                # New manifests use project-relative paths.
+                # Older manifests may still contain absolute paths.
+                if stored_path.is_absolute():
+
+                    raw_path = stored_path
+
+                else:
+
+                    raw_path = (
+                        PROJECT_ROOT
+                        / stored_path
+                    )
+
+            if (
+                raw_path is not None
+                and raw_path.exists()
+            ):
 
                 current_checksum = (
                     sha256_file(
@@ -626,13 +661,14 @@ def main() -> None:
                 )
 
                 expected_checksum = (
-                    existing_entry[
+                    existing_entry.get(
                         "sha256"
-                    ]
+                    )
                 )
 
                 if (
-                    current_checksum
+                    expected_checksum
+                    and current_checksum
                     != expected_checksum
                 ):
 
@@ -661,29 +697,20 @@ def main() -> None:
                     "Downloading again."
                 )
 
-                payload = fetch_nasa_power(
-                    latitude,
-                    longitude,
-                )
+        # --------------------------------------------
+        # Download if no reusable raw payload exists
+        # --------------------------------------------
 
-                validate_payload(payload)
-
-                raw_path = (
-                    save_raw_payload(
-                        payload,
-                        location,
-                        request_id,
-                    )
-                )
-
-        else:
+        if payload is None:
 
             payload = fetch_nasa_power(
                 latitude,
                 longitude,
             )
 
-            validate_payload(payload)
+            validate_payload(
+                payload
+            )
 
             raw_path = (
                 save_raw_payload(
@@ -693,7 +720,17 @@ def main() -> None:
                 )
             )
 
-        validate_payload(payload)
+        # Validate cached and newly downloaded payloads.
+        validate_payload(
+            payload
+        )
+
+        if raw_path is None:
+
+            raise RuntimeError(
+                "Raw file path could not be "
+                f"resolved for {location}."
+            )
 
         checksum = sha256_file(
             raw_path
@@ -733,7 +770,6 @@ def main() -> None:
             "parameters":
                 PARAMETERS,
 
-  
             "raw_file":
                 str(
                     raw_path.relative_to(
@@ -753,6 +789,7 @@ def main() -> None:
                 ).isoformat(),
         }
 
+        # Preserve partial progress after each location.
         save_manifest(
             manifest
         )
@@ -766,61 +803,148 @@ def main() -> None:
         final_df
     )
 
-    manifest["dataset"] = {
-    "rows": int(len(final_df)),
-    "locations": int(
-        final_df[
-            "location"
-        ].nunique()
-    ),
-    "start_date": str(
-        final_df[
-            "date"
-        ].min()
-    ),
-    "end_date": str(
-        final_df[
-            "date"
-        ].max()
-    ),
-    "generated_at":
-        datetime.now(
-            timezone.utc
-        ).isoformat(),
-}
-    
+    # Write the final deterministic interim dataset first.
     save_interim(
         final_df
     )
-    
-    manifest["dataset"][
-    "interim_file"
-    ] = str(
-    INTERIM_PATH.relative_to(
-        PROJECT_ROOT
-    )
-    )
 
-    manifest["dataset"][
-    "sha256"
-    ] = sha256_file(
-    INTERIM_PATH
-    )
+    # --------------------------------------------
+    # Dataset-level provenance metadata
+    # --------------------------------------------
 
-    
+    manifest["dataset"] = {
+        "rows":
+            int(len(final_df)),
+
+        "locations":
+            int(
+                final_df[
+                    "location"
+                ].nunique()
+            ),
+
+        "start_date":
+            final_df[
+                "date"
+            ].min().strftime(
+                "%Y-%m-%d"
+            ),
+
+        "end_date":
+            final_df[
+                "date"
+            ].max().strftime(
+                "%Y-%m-%d"
+            ),
+
+        "generated_at":
+            datetime.now(
+                timezone.utc
+            ).isoformat(),
+
+        "interim_file":
+            str(
+                INTERIM_PATH.relative_to(
+                    PROJECT_ROOT
+                )
+            ),
+
+        "sha256":
+            sha256_file(
+                INTERIM_PATH
+            ),
+    }
+
     save_manifest(
-    manifest
-   ) 
-    
+        manifest
+    )
 
+    # --------------------------------------------
+    # Run-level summary
+    # --------------------------------------------
 
-    
-    
-    
+    run_summary = {
+        "pipeline":
+            "HydroMet-ETL",
+
+        "source":
+            "NASA_POWER",
+
+        "status":
+            "success",
+
+        "rows":
+            int(len(final_df)),
+
+        "locations":
+            int(
+                final_df[
+                    "location"
+                ].nunique()
+            ),
+
+        "start_date":
+            final_df[
+                "date"
+            ].min().strftime(
+                "%Y-%m-%d"
+            ),
+
+        "end_date":
+            final_df[
+                "date"
+            ].max().strftime(
+                "%Y-%m-%d"
+            ),
+
+        "output_file":
+            str(
+                INTERIM_PATH.relative_to(
+                    PROJECT_ROOT
+                )
+            ),
+
+        "output_sha256":
+            sha256_file(
+                INTERIM_PATH
+            ),
+
+        "completed_at":
+            datetime.now(
+                timezone.utc
+            ).isoformat(),
+    }
+
+    temporary_summary_path = (
+        RUN_SUMMARY_PATH
+        .with_suffix(".tmp")
+    )
+
+    with temporary_summary_path.open(
+        "w",
+        encoding="utf-8",
+    ) as file:
+
+        json.dump(
+            run_summary,
+            file,
+            indent=4,
+        )
+
+    temporary_summary_path.replace(
+        RUN_SUMMARY_PATH
+    )
+
     logging.info(
         "Final interim dataset "
         "contains %s rows.",
         f"{len(final_df):,}",
+    )
+
+    logging.info(
+        "Ingestion run summary "
+        "saved to %s",
+        RUN_SUMMARY_PATH,
     )
 
     logging.info(
@@ -831,39 +955,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
-    
-run_summary = {
-    "pipeline": "HydroMet-ETL",
-    "source": "NASA_POWER",
-    "status": "success",
-    "rows": int(len(final_df)),
-    "locations": int(
-        final_df["location"].nunique()
-    ),
-    "start_date": str(
-        final_df["date"].min()
-    ),
-    "end_date": str(
-        final_df["date"].max()
-    ),
-    "output_sha256":
-        sha256_file(
-            INTERIM_PATH
-        ),
-    "completed_at":
-        datetime.now(
-            timezone.utc
-        ).isoformat(),
-}
-
-with RUN_SUMMARY_PATH.open(
-    "w",
-    encoding="utf-8"
-) as file:
-
-    json.dump(
-        run_summary,
-        file,
-        indent=4
-    )

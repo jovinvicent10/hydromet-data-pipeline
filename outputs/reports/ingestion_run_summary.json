@@ -1,0 +1,12 @@
+{
+    "pipeline": "HydroMet-ETL",
+    "source": "NASA_POWER",
+    "status": "success",
+    "rows": 73048,
+    "locations": 8,
+    "start_date": "2001-01-01",
+    "end_date": "2025-12-31",
+    "output_file": "data\\interim\\nasa_power_tanzania_daily.csv",
+    "output_sha256": "fdab2668f283fe9531b39506ebb4325a462d9283ed5434d1cfaa67e8d743a8b9",
+    "completed_at": "2026-09-02T05:37:18.478815+00:00"
+}
