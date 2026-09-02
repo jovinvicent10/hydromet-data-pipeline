@@ -42,3 +42,13 @@ data/external/*
 # Local database files
 *.duckdb
 *.duckdb.wal
+
+# Raw downloaded datasets
+data/raw/
+
+# Local analytical databases
+*.duckdb
+*.duckdb.wal
+
+# Pipeline logs
+logs/

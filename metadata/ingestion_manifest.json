@@ -1,0 +1,165 @@
+{
+    "source": "NASA_POWER",
+    "requests": {
+        "119dcc628fbe824b": {
+            "location": "Arusha",
+            "latitude": -3.3869,
+            "longitude": 36.683,
+            "start_date": "20010101",
+            "end_date": "20251231",
+            "parameters": [
+                "T2M",
+                "T2M_MIN",
+                "T2M_MAX",
+                "RH2M",
+                "PRECTOTCORR",
+                "WS2M",
+                "ALLSKY_SFC_SW_DWN"
+            ],
+            "raw_file": "D:\\NMAIST_MASTERS LIFE\\Semister 2 Courses\\DATA ENGINEERING AND ANALYTICS\\Projects\\hydromet-data-pipeline\\data\\raw\\nasa_power\\arusha_20010101_20251231_119dcc628fbe824b.json",
+            "sha256": "3d1451255d57c44c558323ac79db46805f455c3b22ec76e6285194758d749e8c",
+            "status": "success",
+            "last_verified_at": "2026-08-18T22:49:45.312275+00:00"
+        },
+        "34fea2903da3ff48": {
+            "location": "Dar_es_Salaam",
+            "latitude": -6.7924,
+            "longitude": 39.2083,
+            "start_date": "20010101",
+            "end_date": "20251231",
+            "parameters": [
+                "T2M",
+                "T2M_MIN",
+                "T2M_MAX",
+                "RH2M",
+                "PRECTOTCORR",
+                "WS2M",
+                "ALLSKY_SFC_SW_DWN"
+            ],
+            "raw_file": "D:\\NMAIST_MASTERS LIFE\\Semister 2 Courses\\DATA ENGINEERING AND ANALYTICS\\Projects\\hydromet-data-pipeline\\data\\raw\\nasa_power\\dar_es_salaam_20010101_20251231_34fea2903da3ff48.json",
+            "sha256": "c38efa552d9b36060a966e04a7132fb51f97bd215644cf3b31fd5b68ad861156",
+            "status": "success",
+            "last_verified_at": "2026-08-18T22:49:45.790547+00:00"
+        },
+        "be30bb749451583a": {
+            "location": "Dodoma",
+            "latitude": -6.163,
+            "longitude": 35.7516,
+            "start_date": "20010101",
+            "end_date": "20251231",
+            "parameters": [
+                "T2M",
+                "T2M_MIN",
+                "T2M_MAX",
+                "RH2M",
+                "PRECTOTCORR",
+                "WS2M",
+                "ALLSKY_SFC_SW_DWN"
+            ],
+            "raw_file": "D:\\NMAIST_MASTERS LIFE\\Semister 2 Courses\\DATA ENGINEERING AND ANALYTICS\\Projects\\hydromet-data-pipeline\\data\\raw\\nasa_power\\dodoma_20010101_20251231_be30bb749451583a.json",
+            "sha256": "858505b80a6879be6adbe5ecb2eeb83c174695b182c581beb9c1a1fad6ac2cef",
+            "status": "success",
+            "last_verified_at": "2026-08-18T22:49:46.261428+00:00"
+        },
+        "99723df07c4bb3c1": {
+            "location": "Mbeya",
+            "latitude": -8.9094,
+            "longitude": 33.4608,
+            "start_date": "20010101",
+            "end_date": "20251231",
+            "parameters": [
+                "T2M",
+                "T2M_MIN",
+                "T2M_MAX",
+                "RH2M",
+                "PRECTOTCORR",
+                "WS2M",
+                "ALLSKY_SFC_SW_DWN"
+            ],
+            "raw_file": "D:\\NMAIST_MASTERS LIFE\\Semister 2 Courses\\DATA ENGINEERING AND ANALYTICS\\Projects\\hydromet-data-pipeline\\data\\raw\\nasa_power\\mbeya_20010101_20251231_99723df07c4bb3c1.json",
+            "sha256": "6974b5cf2a58639608c525ef64ed23f305df3dc612b899323a33c6a3348f4ecc",
+            "status": "success",
+            "last_verified_at": "2026-08-18T22:49:46.715499+00:00"
+        },
+        "c63ec5be4b14dd50": {
+            "location": "Morogoro",
+            "latitude": -6.8235,
+            "longitude": 37.6612,
+            "start_date": "20010101",
+            "end_date": "20251231",
+            "parameters": [
+                "T2M",
+                "T2M_MIN",
+                "T2M_MAX",
+                "RH2M",
+                "PRECTOTCORR",
+                "WS2M",
+                "ALLSKY_SFC_SW_DWN"
+            ],
+            "raw_file": "D:\\NMAIST_MASTERS LIFE\\Semister 2 Courses\\DATA ENGINEERING AND ANALYTICS\\Projects\\hydromet-data-pipeline\\data\\raw\\nasa_power\\morogoro_20010101_20251231_c63ec5be4b14dd50.json",
+            "sha256": "86f3dfe4835654c6a1b90d1c442e69f294aa26f0e16b7d1dd3643b9268562f61",
+            "status": "success",
+            "last_verified_at": "2026-08-18T22:49:47.155175+00:00"
+        },
+        "4a11d5617d49c695": {
+            "location": "Mwanza",
+            "latitude": -2.5164,
+            "longitude": 32.9175,
+            "start_date": "20010101",
+            "end_date": "20251231",
+            "parameters": [
+                "T2M",
+                "T2M_MIN",
+                "T2M_MAX",
+                "RH2M",
+                "PRECTOTCORR",
+                "WS2M",
+                "ALLSKY_SFC_SW_DWN"
+            ],
+            "raw_file": "D:\\NMAIST_MASTERS LIFE\\Semister 2 Courses\\DATA ENGINEERING AND ANALYTICS\\Projects\\hydromet-data-pipeline\\data\\raw\\nasa_power\\mwanza_20010101_20251231_4a11d5617d49c695.json",
+            "sha256": "a7b4bd9d52bad7054cc8b9b531c3e04e76ab9e09373f48f6a03c91809a54d7e8",
+            "status": "success",
+            "last_verified_at": "2026-08-18T22:49:47.601489+00:00"
+        },
+        "a0373710801764f0": {
+            "location": "Songea",
+            "latitude": -10.6833,
+            "longitude": 35.65,
+            "start_date": "20010101",
+            "end_date": "20251231",
+            "parameters": [
+                "T2M",
+                "T2M_MIN",
+                "T2M_MAX",
+                "RH2M",
+                "PRECTOTCORR",
+                "WS2M",
+                "ALLSKY_SFC_SW_DWN"
+            ],
+            "raw_file": "D:\\NMAIST_MASTERS LIFE\\Semister 2 Courses\\DATA ENGINEERING AND ANALYTICS\\Projects\\hydromet-data-pipeline\\data\\raw\\nasa_power\\songea_20010101_20251231_a0373710801764f0.json",
+            "sha256": "41108c30b8b2e7fd32d91404486036993a025d75b4e6836ef3d194c8b9235857",
+            "status": "success",
+            "last_verified_at": "2026-08-18T22:49:48.127272+00:00"
+        },
+        "206ca1ffded08dd7": {
+            "location": "Tabora",
+            "latitude": -5.0162,
+            "longitude": 32.8266,
+            "start_date": "20010101",
+            "end_date": "20251231",
+            "parameters": [
+                "T2M",
+                "T2M_MIN",
+                "T2M_MAX",
+                "RH2M",
+                "PRECTOTCORR",
+                "WS2M",
+                "ALLSKY_SFC_SW_DWN"
+            ],
+            "raw_file": "D:\\NMAIST_MASTERS LIFE\\Semister 2 Courses\\DATA ENGINEERING AND ANALYTICS\\Projects\\hydromet-data-pipeline\\data\\raw\\nasa_power\\tabora_20010101_20251231_206ca1ffded08dd7.json",
+            "sha256": "a32b0a6ef327932e304f044c828a5b189c157abd82386ab0de63edcf63a936f2",
+            "status": "success",
+            "last_verified_at": "2026-08-18T22:49:48.644910+00:00"
+        }
+    }
+}
