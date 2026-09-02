@@ -1,0 +1,60 @@
+{
+  "project": "HydroMet-ETL",
+  "benchmark_generated_at_utc": "2026-09-02T07:40:16.286123+00:00",
+  "benchmark_methodology": {
+    "warmup_runs_per_function": 1,
+    "measured_repetitions": 10,
+    "reported_statistics": [
+      "mean",
+      "median",
+      "standard_deviation",
+      "minimum",
+      "maximum"
+    ]
+  },
+  "source_dataset": {
+    "path": "data\\interim\\nasa_power_tanzania_daily.csv",
+    "rows": 73048
+  },
+  "physical_format_comparison": {
+    "description": "CSV, Parquet and DuckDB_wide contain the same source-wide dataset. This provides an apples-to-apples physical storage and query comparison.",
+    "results_file": "outputs\\benchmarks\\storage_benchmark_results.csv"
+  },
+  "star_schema_benchmark": {
+    "description": "The analytical DuckDB star schema is benchmarked separately because its grain differs from the wide source dataset.",
+    "database": "data\\database\\hydromet.duckdb",
+    "view": "vw_weather_observations",
+    "results_file": "outputs\\benchmarks\\star_schema_benchmark_results.csv"
+  },
+  "filter_definition": {
+    "location": "Arusha",
+    "start_date": "2020-01-01",
+    "end_date": "2025-12-31"
+  },
+  "aggregation_definition": {
+    "variable": "PRECTOTCORR",
+    "operation": "Mean monthly precipitation by location"
+  },
+  "equivalence_validation": {
+    "row_counts": {
+      "CSV": 73048,
+      "Parquet": 73048,
+      "DuckDB_wide": 73048
+    },
+    "filter_result_counts": {
+      "CSV": 2192,
+      "Parquet": 2192,
+      "DuckDB_wide": 2192
+    },
+    "aggregation_rows": 2400,
+    "aggregation_tolerance": 1e-09
+  },
+  "environment": {
+    "python_version": "3.13.9",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "pandas_version": "3.0.5",
+    "duckdb_version": "1.5.5"
+  },
+  "physical_result_rows": 3,
+  "star_schema_result_rows": 2
+}
