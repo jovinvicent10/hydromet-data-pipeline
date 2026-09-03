@@ -1,0 +1,24 @@
+rule_name,category,severity,status,affected_rows,description
+required_columns_present,schema,ERROR,PASS,0,All required HydroMet columns must be present. Missing columns: []
+missing_required_values,completeness,ERROR,PASS,0,Required HydroMet fields should not contain ordinary missing values.
+duplicate_location_date,uniqueness,ERROR,PASS,0,Each location-date pair must occur only once in the wide daily dataset.
+valid_coordinates,validity,ERROR,PASS,0,Latitude must be between -90 and 90 and longitude between -180 and 180.
+relative_humidity_range,physical_validity,ERROR,PASS,0,RH2M must lie between 0 and 100.
+negative_precipitation,physical_validity,ERROR,PASS,0,PRECTOTCORR must not be negative.
+negative_wind_speed,physical_validity,ERROR,PASS,0,WS2M must not be negative.
+negative_solar_radiation,physical_validity,ERROR,PASS,0,ALLSKY_SFC_SW_DWN must not be negative.
+temperature_consistency,consistency,ERROR,PASS,0,Temperature fields must satisfy T2M_MIN <= T2M <= T2M_MAX.
+daily_date_coverage,completeness,ERROR,PASS,0,Each location should have continuous daily coverage between its first and last observation.
+source_consistency,lineage,ERROR,PASS,0,Current validated baseline should identify NASA_POWER as the source.
+iqr_flag_T2M,statistical_diagnostic,WARNING,WARNING,1636,"T2M observations outside the 1.5×IQR diagnostic range. These are statistical flags, not automatically errors."
+iqr_flag_T2M_MIN,statistical_diagnostic,WARNING,WARNING,1037,"T2M_MIN observations outside the 1.5×IQR diagnostic range. These are statistical flags, not automatically errors."
+iqr_flag_T2M_MAX,statistical_diagnostic,WARNING,WARNING,344,"T2M_MAX observations outside the 1.5×IQR diagnostic range. These are statistical flags, not automatically errors."
+iqr_flag_RH2M,statistical_diagnostic,WARNING,WARNING,109,"RH2M observations outside the 1.5×IQR diagnostic range. These are statistical flags, not automatically errors."
+iqr_flag_PRECTOTCORR,statistical_diagnostic,WARNING,WARNING,8350,"PRECTOTCORR observations outside the 1.5×IQR diagnostic range. These are statistical flags, not automatically errors."
+iqr_flag_WS2M,statistical_diagnostic,WARNING,WARNING,156,"WS2M observations outside the 1.5×IQR diagnostic range. These are statistical flags, not automatically errors."
+iqr_flag_ALLSKY_SFC_SW_DWN,statistical_diagnostic,WARNING,WARNING,897,"ALLSKY_SFC_SW_DWN observations outside the 1.5×IQR diagnostic range. These are statistical flags, not automatically errors."
+baseline_row_count,baseline,ERROR,PASS,0,Expected 73048; observed 73048.
+baseline_location_count,baseline,ERROR,PASS,0,Expected 8; observed 8.
+baseline_date_count,baseline,ERROR,PASS,0,Expected 9131; observed 9131.
+baseline_start_date,baseline,ERROR,PASS,0,Expected start date 2001-01-01; observed 2001-01-01.
+baseline_end_date,baseline,ERROR,PASS,0,Expected end date 2025-12-31; observed 2025-12-31.

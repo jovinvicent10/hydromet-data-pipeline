@@ -1,0 +1,215 @@
+{
+    "pipeline": "HydroMet-ETL",
+    "validation_type": "data_quality_as_code",
+    "validated_at": "2026-09-03T05:49:55.387325+00:00",
+    "input_file": "data\\interim\\nasa_power_tanzania_daily.csv",
+    "dataset_sha256": "fdab2668f283fe9531b39506ebb4325a462d9283ed5434d1cfaa67e8d743a8b9",
+    "overall_status": "PASS",
+    "rows": 73048,
+    "locations": 8,
+    "dates": 9131,
+    "start_date": "2001-01-01",
+    "end_date": "2025-12-31",
+    "source_values": [
+        "NASA_POWER"
+    ],
+    "error_failures": 0,
+    "warning_rules": 7,
+    "total_iqr_flags": 12529,
+    "iqr_flags_by_variable": {
+        "T2M": 1636,
+        "T2M_MIN": 1037,
+        "T2M_MAX": 344,
+        "RH2M": 109,
+        "PRECTOTCORR": 8350,
+        "WS2M": 156,
+        "ALLSKY_SFC_SW_DWN": 897
+    },
+    "strict_baseline": true,
+    "quality_rules": [
+        {
+            "rule_name": "required_columns_present",
+            "category": "schema",
+            "severity": "ERROR",
+            "status": "PASS",
+            "affected_rows": 0,
+            "description": "All required HydroMet columns must be present. Missing columns: []"
+        },
+        {
+            "rule_name": "missing_required_values",
+            "category": "completeness",
+            "severity": "ERROR",
+            "status": "PASS",
+            "affected_rows": 0,
+            "description": "Required HydroMet fields should not contain ordinary missing values."
+        },
+        {
+            "rule_name": "duplicate_location_date",
+            "category": "uniqueness",
+            "severity": "ERROR",
+            "status": "PASS",
+            "affected_rows": 0,
+            "description": "Each location-date pair must occur only once in the wide daily dataset."
+        },
+        {
+            "rule_name": "valid_coordinates",
+            "category": "validity",
+            "severity": "ERROR",
+            "status": "PASS",
+            "affected_rows": 0,
+            "description": "Latitude must be between -90 and 90 and longitude between -180 and 180."
+        },
+        {
+            "rule_name": "relative_humidity_range",
+            "category": "physical_validity",
+            "severity": "ERROR",
+            "status": "PASS",
+            "affected_rows": 0,
+            "description": "RH2M must lie between 0 and 100."
+        },
+        {
+            "rule_name": "negative_precipitation",
+            "category": "physical_validity",
+            "severity": "ERROR",
+            "status": "PASS",
+            "affected_rows": 0,
+            "description": "PRECTOTCORR must not be negative."
+        },
+        {
+            "rule_name": "negative_wind_speed",
+            "category": "physical_validity",
+            "severity": "ERROR",
+            "status": "PASS",
+            "affected_rows": 0,
+            "description": "WS2M must not be negative."
+        },
+        {
+            "rule_name": "negative_solar_radiation",
+            "category": "physical_validity",
+            "severity": "ERROR",
+            "status": "PASS",
+            "affected_rows": 0,
+            "description": "ALLSKY_SFC_SW_DWN must not be negative."
+        },
+        {
+            "rule_name": "temperature_consistency",
+            "category": "consistency",
+            "severity": "ERROR",
+            "status": "PASS",
+            "affected_rows": 0,
+            "description": "Temperature fields must satisfy T2M_MIN <= T2M <= T2M_MAX."
+        },
+        {
+            "rule_name": "daily_date_coverage",
+            "category": "completeness",
+            "severity": "ERROR",
+            "status": "PASS",
+            "affected_rows": 0,
+            "description": "Each location should have continuous daily coverage between its first and last observation."
+        },
+        {
+            "rule_name": "source_consistency",
+            "category": "lineage",
+            "severity": "ERROR",
+            "status": "PASS",
+            "affected_rows": 0,
+            "description": "Current validated baseline should identify NASA_POWER as the source."
+        },
+        {
+            "rule_name": "iqr_flag_T2M",
+            "category": "statistical_diagnostic",
+            "severity": "WARNING",
+            "status": "WARNING",
+            "affected_rows": 1636,
+            "description": "T2M observations outside the 1.5\u00d7IQR diagnostic range. These are statistical flags, not automatically errors."
+        },
+        {
+            "rule_name": "iqr_flag_T2M_MIN",
+            "category": "statistical_diagnostic",
+            "severity": "WARNING",
+            "status": "WARNING",
+            "affected_rows": 1037,
+            "description": "T2M_MIN observations outside the 1.5\u00d7IQR diagnostic range. These are statistical flags, not automatically errors."
+        },
+        {
+            "rule_name": "iqr_flag_T2M_MAX",
+            "category": "statistical_diagnostic",
+            "severity": "WARNING",
+            "status": "WARNING",
+            "affected_rows": 344,
+            "description": "T2M_MAX observations outside the 1.5\u00d7IQR diagnostic range. These are statistical flags, not automatically errors."
+        },
+        {
+            "rule_name": "iqr_flag_RH2M",
+            "category": "statistical_diagnostic",
+            "severity": "WARNING",
+            "status": "WARNING",
+            "affected_rows": 109,
+            "description": "RH2M observations outside the 1.5\u00d7IQR diagnostic range. These are statistical flags, not automatically errors."
+        },
+        {
+            "rule_name": "iqr_flag_PRECTOTCORR",
+            "category": "statistical_diagnostic",
+            "severity": "WARNING",
+            "status": "WARNING",
+            "affected_rows": 8350,
+            "description": "PRECTOTCORR observations outside the 1.5\u00d7IQR diagnostic range. These are statistical flags, not automatically errors."
+        },
+        {
+            "rule_name": "iqr_flag_WS2M",
+            "category": "statistical_diagnostic",
+            "severity": "WARNING",
+            "status": "WARNING",
+            "affected_rows": 156,
+            "description": "WS2M observations outside the 1.5\u00d7IQR diagnostic range. These are statistical flags, not automatically errors."
+        },
+        {
+            "rule_name": "iqr_flag_ALLSKY_SFC_SW_DWN",
+            "category": "statistical_diagnostic",
+            "severity": "WARNING",
+            "status": "WARNING",
+            "affected_rows": 897,
+            "description": "ALLSKY_SFC_SW_DWN observations outside the 1.5\u00d7IQR diagnostic range. These are statistical flags, not automatically errors."
+        },
+        {
+            "rule_name": "baseline_row_count",
+            "category": "baseline",
+            "severity": "ERROR",
+            "status": "PASS",
+            "affected_rows": 0,
+            "description": "Expected 73048; observed 73048."
+        },
+        {
+            "rule_name": "baseline_location_count",
+            "category": "baseline",
+            "severity": "ERROR",
+            "status": "PASS",
+            "affected_rows": 0,
+            "description": "Expected 8; observed 8."
+        },
+        {
+            "rule_name": "baseline_date_count",
+            "category": "baseline",
+            "severity": "ERROR",
+            "status": "PASS",
+            "affected_rows": 0,
+            "description": "Expected 9131; observed 9131."
+        },
+        {
+            "rule_name": "baseline_start_date",
+            "category": "baseline",
+            "severity": "ERROR",
+            "status": "PASS",
+            "affected_rows": 0,
+            "description": "Expected start date 2001-01-01; observed 2001-01-01."
+        },
+        {
+            "rule_name": "baseline_end_date",
+            "category": "baseline",
+            "severity": "ERROR",
+            "status": "PASS",
+            "affected_rows": 0,
+            "description": "Expected end date 2025-12-31; observed 2025-12-31."
+        }
+    ]
+}

@@ -257,3 +257,13 @@ A full-table query using:
 ```sql
 SELECT *
 FROM `hydromet-etl.hydromet.nasa_power_daily`;
+
+
+## Week 6 — Validation checks 
+
+### Validated Unit 6 Results
+
+The strict-baseline quality validation was executed using:
+
+```bash
+python -m src.quality.validate_hydromet --strict-baseline
