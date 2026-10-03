@@ -1,0 +1,43 @@
+{
+    "pipeline": "HydroMet-ETL",
+    "stage": "Week 10 - Unit 9 Performance Optimization",
+    "optimization": "Replace repeated analytical CSV reads with equivalent Parquet reads",
+    "methodology": {
+        "same_logical_dataset": true,
+        "repetitions": 10,
+        "warmup_runs": 1,
+        "timing_method": "time.perf_counter",
+        "equivalence_validation": true
+    },
+    "dataset": {
+        "rows": 73048,
+        "columns": 12
+    },
+    "csv": {
+        "format": "CSV",
+        "repetitions": 10,
+        "mean_seconds": 0.08451202000142075,
+        "median_seconds": 0.08308205002686009,
+        "std_seconds": 0.005562396838123409,
+        "min_seconds": 0.07949159998679534,
+        "max_seconds": 0.09654519998002797,
+        "size_mb": 5.976841926574707,
+        "sha256": "fdab2668f283fe9531b39506ebb4325a462d9283ed5434d1cfaa67e8d743a8b9"
+    },
+    "parquet": {
+        "format": "Parquet",
+        "repetitions": 10,
+        "mean_seconds": 0.004475389991421252,
+        "median_seconds": 0.0043365499877836555,
+        "std_seconds": 0.0005632528731003676,
+        "min_seconds": 0.0037325999583117664,
+        "max_seconds": 0.005459200008772314,
+        "size_mb": 0.957728385925293,
+        "sha256": "810c97f53d2d0f1674a2197b82f0281924ebec5ecd0d1db2757a150452c045eb"
+    },
+    "improvement": {
+        "speedup": 19.158559283510545,
+        "time_reduction_percent": 94.78040083702597,
+        "storage_reduction_percent": 83.97601278917944
+    }
+}

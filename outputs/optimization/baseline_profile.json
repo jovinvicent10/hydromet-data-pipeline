@@ -1,0 +1,54 @@
+{
+    "pipeline": "HydroMet-ETL",
+    "stage": "Week 10 - Unit 9 Baseline Performance Profiling",
+    "repetitions": 10,
+    "warmup_runs": 1,
+    "timing_method": "time.perf_counter",
+    "results": [
+        {
+            "operation": "csv_load",
+            "repetitions": 10,
+            "mean_seconds": 0.08643455998972058,
+            "median_seconds": 0.08589299998129718,
+            "std_seconds": 0.005260060281274587,
+            "min_seconds": 0.08018920000176877,
+            "max_seconds": 0.09648139995988458
+        },
+        {
+            "operation": "duckdb_daily_mart_load",
+            "repetitions": 10,
+            "mean_seconds": 0.07495495000039228,
+            "median_seconds": 0.07476250000763685,
+            "std_seconds": 0.002924943974064078,
+            "min_seconds": 0.07121399999596179,
+            "max_seconds": 0.08193869999377057
+        },
+        {
+            "operation": "ml_feature_engineering",
+            "repetitions": 10,
+            "mean_seconds": 0.02608662999700755,
+            "median_seconds": 0.026487699971767142,
+            "std_seconds": 0.0010714903228451944,
+            "min_seconds": 0.024106699973344803,
+            "max_seconds": 0.027192999958060682
+        },
+        {
+            "operation": "duckdb_monthly_precipitation",
+            "repetitions": 10,
+            "mean_seconds": 0.019811750005465,
+            "median_seconds": 0.019932600000174716,
+            "std_seconds": 0.0008344757889559954,
+            "min_seconds": 0.018407100054901093,
+            "max_seconds": 0.02080300002126023
+        },
+        {
+            "operation": "parquet_load",
+            "repetitions": 10,
+            "mean_seconds": 0.004394199996022507,
+            "median_seconds": 0.004224249976687133,
+            "std_seconds": 0.00041340461177317035,
+            "min_seconds": 0.004020899999886751,
+            "max_seconds": 0.005198800005018711
+        }
+    ]
+}
