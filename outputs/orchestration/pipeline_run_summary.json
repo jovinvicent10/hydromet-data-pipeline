@@ -1,0 +1,72 @@
+{
+    "pipeline": "HydroMet-ETL",
+    "stage": "Week 11 - Orchestration and Handover",
+    "pipeline_started_at": "2026-10-03T23:19:04.541715+00:00",
+    "pipeline_finished_at": "2026-10-03T23:21:39.400378+00:00",
+    "duration_seconds": 154.858648,
+    "status": "SUCCESS",
+    "skip_ingestion": true,
+    "skip_tests": false,
+    "stages": [
+        {
+            "stage": "data_quality",
+            "description": "Validate governed HydroMet dataset",
+            "status": "SUCCESS",
+            "return_code": 0,
+            "started_at": "2026-10-03T23:19:04.542379+00:00",
+            "finished_at": "2026-10-03T23:19:05.846157+00:00",
+            "duration_seconds": 1.303767,
+            "log_file": "logs\\orchestration\\data_quality.log"
+        },
+        {
+            "stage": "database_schema",
+            "description": "Create DuckDB analytical schema",
+            "status": "SUCCESS",
+            "return_code": 0,
+            "started_at": "2026-10-03T23:19:05.848635+00:00",
+            "finished_at": "2026-10-03T23:19:07.062521+00:00",
+            "duration_seconds": 1.21386,
+            "log_file": "logs\\orchestration\\database_schema.log"
+        },
+        {
+            "stage": "database_load",
+            "description": "Load dimensional analytical model",
+            "status": "SUCCESS",
+            "return_code": 0,
+            "started_at": "2026-10-03T23:19:07.063690+00:00",
+            "finished_at": "2026-10-03T23:21:34.660836+00:00",
+            "duration_seconds": 147.597132,
+            "log_file": "logs\\orchestration\\database_load.log"
+        },
+        {
+            "stage": "serving_layer",
+            "description": "Create analytical serving layer",
+            "status": "SUCCESS",
+            "return_code": 0,
+            "started_at": "2026-10-03T23:21:34.662140+00:00",
+            "finished_at": "2026-10-03T23:21:35.612763+00:00",
+            "duration_seconds": 0.950612,
+            "log_file": "logs\\orchestration\\serving_layer.log"
+        },
+        {
+            "stage": "ml_preparation",
+            "description": "Generate leakage-aware ML-ready data",
+            "status": "SUCCESS",
+            "return_code": 0,
+            "started_at": "2026-10-03T23:21:35.615094+00:00",
+            "finished_at": "2026-10-03T23:21:36.485626+00:00",
+            "duration_seconds": 0.870521,
+            "log_file": "logs\\orchestration\\ml_preparation.log"
+        },
+        {
+            "stage": "regression_tests",
+            "description": "Run complete automated test suite",
+            "status": "SUCCESS",
+            "return_code": 0,
+            "started_at": "2026-10-03T23:21:36.486795+00:00",
+            "finished_at": "2026-10-03T23:21:39.399283+00:00",
+            "duration_seconds": 2.912477,
+            "log_file": "logs\\orchestration\\regression_tests.log"
+        }
+    ]
+}
