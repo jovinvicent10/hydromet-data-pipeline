@@ -1,0 +1,37 @@
+{
+    "pipeline": "HydroMet-ETL",
+    "stage": "Week 9 - Unit 8 ML Data Preparation",
+    "prediction_task": "Use weather information available up to day t to support prediction of precipitation on day t+1.",
+    "split_strategy": "chronological",
+    "random_shuffle": false,
+    "train": {
+        "end": "2018-12-31",
+        "rows": 52352,
+        "actual_start": "2001-01-31",
+        "actual_end": "2018-12-31"
+    },
+    "validation": {
+        "start": "2019-01-01",
+        "end": "2021-12-31",
+        "rows": 8768,
+        "actual_start": "2019-01-01",
+        "actual_end": "2021-12-31"
+    },
+    "test": {
+        "start": "2022-01-01",
+        "end": "2025-12-31",
+        "rows": 11680,
+        "actual_start": "2022-01-01",
+        "actual_end": "2025-12-30"
+    },
+    "ml_ready_rows": 72800,
+    "locations": 8,
+    "target": "target_precip_next_day",
+    "leakage_controls": [
+        "Chronological split",
+        "No random shuffle",
+        "Lag features calculated within location",
+        "Rolling features shifted by one day",
+        "Next-day precipitation used only as target"
+    ]
+}
