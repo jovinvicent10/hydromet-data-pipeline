@@ -267,3 +267,38 @@ NASA POWER + CHIRPS + ERA5-Land + station observations
 
 can be harmonized into a common observation model while preserving
 source information through `dim_source`.
+
+## 13. Schema rationale and tradeoffs
+
+The implemented contract is [01_create_schema.sql](../sql/01_create_schema.sql), with loading in [load_duckdb.py](../src/database/load_duckdb.py).
+
+| Choice | Rationale | Tradeoff or implementation limit |
+|---|---|---|
+| Long observation fact | A variable can be added without a new fact column; source-specific values remain distinguishable. | Seven values expand 73,048 wide rows to 511,336 facts and require joins or a pivot for daily consumers. Compare storage performance at equivalent grain. |
+| Reusable dimensions | Dates, coordinates, units and provider descriptions are defined centrally. | Dimension metadata must remain consistent with the raw response; normalization alone does not verify it. |
+| Integer primary keys plus natural-key uniqueness | Foreign keys provide referential integrity; the four-column fact uniqueness rule rejects duplicate observations. | `INSERT OR IGNORE` prevents repeated inserts but does not update a changed source value or preserve revisions. |
+| Source in fact grain | Future providers can coexist for the same location, date and variable. | The current loader assigns `NASA_POWER` explicitly; multiple-source loading is not implemented. |
+| Separate quality-flag table | One observation can have several rule findings without overwriting the measured value. | The schema defines this table, but the current loader does not populate it; warnings are currently report aggregates. |
+| Wide daily serving mart | Simplifies analyst queries and ML preparation after the long-form load. | The daily SQL groups by source, but the monthly view omits source; it must be reviewed before additional sources are loaded. |
+
+Location IDs are generated from sorted names, variable IDs from metadata order, date IDs as `YYYYMMDD`, and observation IDs from ordered row numbers offset by the current maximum. These are implementation keys, not durable source identifiers across arbitrary rebuilds or changing configurations. `ingested_at` is a database insertion timestamp, not the observation time or an API request identifier.
+
+The current SQL permits nullable `value` and unit metadata and does not enforce meteorological bounds through CHECK constraints. Physical rules and completeness are evaluated in Python. Foreign keys and uniqueness therefore complement, rather than replace, the quality gate.
+
+## 14. Connection to the three problems
+
+- **Limited spatial coverage:** `dim_location` retains the configured coordinates and permits more points, but no area polygons, spatial weights or sampling-frame coverage measures are stored.
+- **Single-source dependency:** `dim_source` preserves provider identity and supports a future common grain. It does not reconcile provider grids, units, temporal conventions or revisions automatically.
+- **Statistical extremes:** `fact_quality_flag` can retain multiple findings per value. Observation-level flag loading, rule versioning and review decisions remain future work; no automatic extreme-value deletion is justified.
+
+## 15. Metadata and provenance limitations
+
+The preserved baseline payload labels `ALLSKY_SFC_SW_DWN` as `MJ/m^2/day`; `VARIABLE_METADATA` in the loader labels it `kWh/m2/day`. The loader melts values without a unit conversion, so the stored unit label is inconsistent with the raw values. Interpret baseline radiation using the raw response unit and resolve this discrepancy before energy calculations. No code is changed by this review.
+
+The fact table has no request ID, raw-file checksum, run ID or source-product version. Traceability currently relies on the external manifest and dataset fingerprints, rather than a direct fact-to-request foreign key. Future provenance extensions should preserve these identifiers and provide stable dimension keys and explicit revision handling. See the [dictionary](data_dictionary.md), [lineage](data_lineage.md) and [datasheet](dataset_datasheet.md).
+
+## Phase 2 implementation update
+
+`load_fact_observation` now filters existing four-column natural keys before inserting. Tests verify existing observation IDs/values remain unchanged across partial completion and repeated loading. New loader runs also correct solar unit metadata to MJ/m²/day without converting the native values. This correction was executed in isolated databases; the historical original database was preserved.
+
+`serving_refresh_metadata` is a new local table keyed by output name, recording a successful refresh timestamp and logical output fingerprint in the same transaction as the refreshed mart. External refresh metadata records failed attempts while retaining the last good timestamp/hash. The `fact_quality_flag` table still has no implemented IQR observation-loading path; row quarantine handles hard failures separately. See [executed evidence](phase2_implementation_and_evidence.md).

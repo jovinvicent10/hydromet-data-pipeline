@@ -53,3 +53,8 @@ The integrated automated test suite was executed using:
 
 ```powershell
 python -m pytest -q
+```
+
+## Phase 1 regression evidence
+
+The retained `logs/orchestration/regression_tests.log` reports 54 passed in 2.35 seconds. This is historical evidence, not a new regression run performed for Phase 1. The current requirement status and read-only verification are recorded in [lab tracker](lab_requirements_tracker.md) and [evidence audit](phase1_evidence_audit.md).

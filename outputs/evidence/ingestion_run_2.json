@@ -1,0 +1,22 @@
+{
+  "pipeline": "HydroMet-ETL",
+  "source": "NASA_POWER",
+  "status": "success",
+  "rows": 73048,
+  "locations": 8,
+  "start_date": "2001-01-01",
+  "end_date": "2025-12-31",
+  "output_file": "data\\processed\\lab_evidence\\paired_ingestion\\interim\\nasa_power_tanzania_daily.csv",
+  "output_sha256": "fdab2668f283fe9531b39506ebb4325a462d9283ed5434d1cfaa67e8d743a8b9",
+  "completed_at": "2026-10-04T19:03:40.236194+00:00",
+  "rows_read": 73048,
+  "rows_loaded": 73048,
+  "rows_rejected": 0,
+  "rejection_reason_counts": {},
+  "cached_requests": 8,
+  "downloaded_requests": 0,
+  "duplicate_keys": 0,
+  "mode": "cached_offline",
+  "run_id": "20261004T190340255653Z",
+  "evidence_run_number": 2
+}

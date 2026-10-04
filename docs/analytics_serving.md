@@ -250,3 +250,12 @@ The serving layer is created using:
 
 ```powershell
 python -m src.serving.create_serving_layer
+```
+
+## Phase 1 evidence boundary
+
+Read-only checks on 2026-10-04 confirm 73,048 daily mart rows and 2,400 monthly groups. Notebook consumers currently read interim CSV; a dashboard/notebook connected to these curated objects is missing. A computed freshness label and deliberately failed-refresh proof are also missing. The saved serving-stage success timestamp is a refresh clue, not the final implemented output-version contract. See [metrics](metrics.md) for proposed freshness formulas and [tracker](lab_requirements_tracker.md) for remaining work.
+
+## Phase 2 serving verification
+
+Transactional refresh, recorded last-good timestamps/hashes, a curated-output dashboard and deliberate failure recovery are now implemented. The failed post-replacement transaction rolled back; the last-good output fingerprint and timestamp remained unchanged, and the snapshot's computed label was FAILED_REFRESH. The dashboard queries the monthly curated view rather than an interim CSV. See `outputs/evidence/failed_refresh_proof.json` and [Phase 2 report](phase2_implementation_and_evidence.md). Browser observation verified the rendered default view; automated filter interaction and screenshot capture remain unverified due to a browser-session error.

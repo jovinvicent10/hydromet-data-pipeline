@@ -18,7 +18,8 @@ Pipeline
 4. Database loading
 5. Analytics serving layer
 6. ML data preparation
-7. Regression verification
+7. Consumer dashboard
+8. Regression verification
 
 Design principles
 -----------------
@@ -112,6 +113,11 @@ PIPELINE_STAGES = [
             "-m",
             "src.ml.prepare_ml_data",
         ],
+    },
+    {
+        "name": "consumer_dashboard",
+        "description": "Query curated monthly output and render freshness-aware dashboard",
+        "command": [sys.executable, "-m", "src.serving.build_dashboard"],
     },
     {
         "name": "regression_tests",

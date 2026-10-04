@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "sha256": {
+    "data\\interim\\nasa_power_tanzania_daily.csv": "fdab2668f283fe9531b39506ebb4325a462d9283ed5434d1cfaa67e8d743a8b9",
+    "metadata\\ingestion_manifest.json": "afa12401c50d669aed6df2a612ead4547456ed9ebe94c5f8e35d0a71d6e27503",
+    "metadata\\ml_split_metadata.json": "ca6d11343080f296cb5b1d37d3cdf50b2b2a10ba0639b706d92928ec13b1d43c",
+    "outputs\\quality\\data_quality_report.json": "a4b11a093c6d77945cbf8ed92315a1026609a9a30deb35c70415de2aa391d3c4",
+    "notebooks\\01_initial_data_profiling.ipynb": "cc05859882250716f9d695b55a8a66361d1333db57b61a8259c398d83db6159f"
+  }
+}

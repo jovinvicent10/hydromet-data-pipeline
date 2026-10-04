@@ -11,6 +11,8 @@ from typing import Any
 import pandas as pd
 import requests
 
+from src.quality.quarantine import partition_rows, write_quarantine
+
 
 # ============================================================
 # Project configuration
@@ -584,6 +586,7 @@ def main() -> None:
     }
 
     all_frames = []
+    request_counts = {"cached_requests": 0, "downloaded_requests": 0}
 
     for (
         location,
@@ -688,6 +691,7 @@ def main() -> None:
                 ) as file:
 
                     payload = json.load(file)
+                request_counts["cached_requests"] += 1
 
             else:
 
@@ -703,10 +707,14 @@ def main() -> None:
 
         if payload is None:
 
+            if OFFLINE:
+                raise RuntimeError(f"Offline ingestion cannot retrieve missing request {request_id}")
+
             payload = fetch_nasa_power(
                 latitude,
                 longitude,
             )
+            request_counts["downloaded_requests"] += 1
 
             validate_payload(
                 payload
@@ -798,6 +806,14 @@ def main() -> None:
         all_frames,
         ignore_index=True,
     )
+
+    final_df, rejected, accounting = partition_rows(final_df)
+    write_quarantine(rejected, accounting, REPORT_DIR / "quarantine")
+    logging.info("Rows read=%s loaded=%s rejected=%s reasons=%s",
+                 accounting["rows_read"], accounting["rows_loaded"],
+                 accounting["rows_rejected"], accounting["rejection_reason_counts"])
+    if accounting["rows_rejected"]:
+        raise ValueError("Ingestion rejected invalid rows; quarantine retained and interim output not published")
 
     validate_dataframe(
         final_df
@@ -915,6 +931,15 @@ def main() -> None:
             ).isoformat(),
     }
 
+    run_summary.update(accounting)
+    run_summary.update(request_counts)
+    run_summary["duplicate_keys"] = int(final_df.duplicated(["location", "date", "source"]).sum())
+    run_summary["mode"] = "cached_offline" if OFFLINE else "cache_or_network"
+    run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
+    run_summary["run_id"] = run_id
+    (REPORT_DIR / f"ingestion_{run_id}.json").write_text(
+        json.dumps(run_summary, indent=4), encoding="utf-8")
+
     temporary_summary_path = (
         RUN_SUMMARY_PATH
         .with_suffix(".tmp")
@@ -953,5 +978,35 @@ def main() -> None:
     )
 
 
+OFFLINE = False
+
+
+def isolated_workspace(directory: Path) -> None:
+    """Redirect writes while retaining immutable project raw files and dates."""
+    global INTERIM_DIR, INTERIM_PATH, METADATA_DIR, MANIFEST_PATH
+    global LOG_DIR, REPORT_DIR, RUN_SUMMARY_PATH
+    directory = directory.resolve()
+    directory.mkdir(parents=True, exist_ok=True)
+    INTERIM_DIR = directory / "interim"
+    INTERIM_PATH = INTERIM_DIR / "nasa_power_tanzania_daily.csv"
+    METADATA_DIR = directory / "metadata"
+    MANIFEST_PATH = METADATA_DIR / "ingestion_manifest.json"
+    LOG_DIR = directory / "logs"
+    REPORT_DIR = directory / "reports"
+    RUN_SUMMARY_PATH = REPORT_DIR / "ingestion_run_summary.json"
+    METADATA_DIR.mkdir(parents=True, exist_ok=True)
+    if not MANIFEST_PATH.exists():
+        import shutil
+        shutil.copy2(PROJECT_ROOT / "metadata" / "ingestion_manifest.json", MANIFEST_PATH)
+
+
 if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser(description="NASA POWER ingestion with row accounting")
+    parser.add_argument("--workspace", type=Path, help="Isolated output directory")
+    parser.add_argument("--offline", action="store_true", help="Require checksum-verified cached raw data")
+    options = parser.parse_args()
+    OFFLINE = options.offline
+    if options.workspace:
+        isolated_workspace(options.workspace)
     main()

@@ -677,10 +677,31 @@ def main() -> None:
 
     args = parser.parse_args()
 
+    from src.quality.quarantine import partition_rows, write_quarantine
+    _, rejected, accounting = partition_rows(pd.read_csv(args.input))
+    write_quarantine(rejected, accounting, args.output_dir / "quarantine")
+    if accounting["rows_rejected"]:
+        # Preserve original rejected records even when malformed numeric values
+        # would otherwise prevent the aggregate validator from running.
+        args.output_dir.mkdir(parents=True, exist_ok=True)
+        rejection_report = {
+            "overall_status": "FAIL", "input_file": str(args.input),
+            "dataset_sha256": sha256_file(args.input),
+            "validated_at": datetime.now(timezone.utc).isoformat(),
+            "row_accounting": accounting,
+            "reason": "Hard row validation failed; downstream refresh is blocked",
+        }
+        (args.output_dir / "data_quality_report.json").write_text(
+            json.dumps(rejection_report, indent=2), encoding="utf-8")
+        print(json.dumps(rejection_report, indent=2))
+        raise SystemExit(1)
+
     report, summary_df = validate_hydromet(
         input_path=args.input,
         strict_baseline=args.strict_baseline,
     )
+
+    report["row_accounting"] = accounting
 
     save_outputs(
         report,

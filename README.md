@@ -270,7 +270,7 @@ The ingestion workflow includes:
 The ingestion design is idempotent: rerunning the same configured
 workflow should not create duplicate observations.
 
-A verified repeated ingestion produced the same dataset SHA-256:
+The saved ingestion summary and the current read-only audit identify this dataset SHA-256 (distinct paired-run hashes remain to be retained):
 
 ```text
 fdab2668f283fe9531b39506ebb4325a462d9283ed5434d1cfaa67e8d743a8b9
@@ -620,7 +620,7 @@ Run:
 python -m pytest -q
 ```
 
-Current verified result:
+Earlier narrative result (not verified by the retained Phase 1 evidence):
 
 ```text
 65 passed in 5.51s
@@ -828,3 +828,83 @@ MSc Data Science and Artificial Intelligence
 The Nelson Mandela African Institution of Science and Technology (NM-AIST)
 
 The project demonstrates the progressive application of data engineering concepts across the semester.
+## Documentation contracts
+
+The original three problems are limited spatial coverage, single-source dependency and statistical extremes. Their evidence and acceptance criteria are documented in:
+
+- [Problem statement](docs/data_problem_statement.md)
+- [Schema rationale and implementation limits](docs/database_schema.md)
+- [Artifact lineage](docs/data_lineage.md)
+- [Metrics and saved baselines](docs/metrics.md)
+- [Data dictionary](docs/data_dictionary.md)
+- [Dataset datasheet](docs/dataset_datasheet.md)
+
+The 2026-10-04 documentation review records a solar-unit metadata discrepancy, aggregate-only quality warnings and ML target-time boundary considerations. The metrics document uses saved machine-readable performance evidence where older narrative examples differ. Pipeline code is unchanged by this review.
+
+## Phase 1 audit and lab submission status
+
+**Team:** [MEMBER 1], [MEMBER 2], [MEMBER 3], [MEMBER 4]. **Submission date:** [SUBMISSION DATE]. **Unassigned owners:** [OWNER]. Repository: [HydroMet-ETL on GitHub](https://github.com/jovinvicent10/hydromet-data-pipeline).
+
+The [lab requirements tracker](docs/lab_requirements_tracker.md) is the current requirement-by-requirement assessment. The [Phase 1 evidence audit](docs/phase1_evidence_audit.md) records read-only checks and reconciles historical claims. The retained regression log shows **54 passed in 2.35 s**; the earlier 65-pass narrative above remains unverified. No test suite or pipeline was rerun for this documentation update.
+
+Submission documents: [concise problem statement](docs/problem_statement_one_page.md), [proposed cloud design](docs/cloud_design_one_page.md), [metrics](metrics.md), [DATASHEET](DATASHEET.md). Page counts for the two concise drafts still require final-format review.
+
+### Users, decisions and the three problems
+
+Climate researchers can compare monthly rainfall and temperature at the sampled points; agricultural analysts can investigate seasonal patterns and prepare research features; data engineers can audit acquisition and repeatability. These users receive evidence for exploratory historical analysis, not a validated national forecast or crop prescription. Eight points constrain spatial conclusions, one provider limits independent validation, and statistical extremes require review. Repeated rainfall sequences and cross-point identical values are supporting diagnostics rather than additional replacement problems.
+
+### Why a star schema and a wide table coexist
+
+A fact is one variable, at one point, on one date, from one source. Four dimensions store shared date, location, variable/unit and provider information. Integer primary keys identify dimension rows; foreign keys link facts; the unique date-location-variable-source combination prevents duplicate observations. `fact_quality_flag` can represent multiple findings per observation, but its local count is currently zero because the loader does not populate it.
+
+Why not keep only one large table? A wide source table is convenient for seven fixed variables, but repeats metadata and requires new columns for new variables; the star model centralizes metadata and retains source in each observation's grain. A wide serving table remains useful: `mart_weather_daily` pivots the facts back into familiar columns so consumers can query weather without manually joining and pivoting. This combines extensible engineering storage with a simple analytical interface; it does not automatically implement multi-source harmonization. See [schema rationale](docs/database_schema.md).
+
+### Direct ingestion and honest idempotency proof
+
+From the repository root, with the existing environment activated:
+
+```powershell
+python -m src.ingestion.ingest_nasa_power
+```
+
+The script reuses checksum-verified raw responses for identical requests and reconstructs a sorted interim output. Retained August logs show 73,048 rows on the initial and repeated run, and cache reuse on repetition. The current CSV fingerprint matches saved ingestion and quality metadata. However, these files do not retain distinct per-run hashes and complete read/loaded/rejected accounting; the [tracker](docs/lab_requirements_tracker.md) therefore marks the required paired-run proof Partial. Phase 2 should retain both summaries, hashes, row/key counts and rejection reasons separately, rather than overwrite the first result. This command is documented here, not executed during Phase 1.
+
+### Existing benchmark and required comparison
+
+The following historical experiment uses the same wide dataset and monthly mean daily precipitation aggregate. Storage values are MiB (1024² bytes), despite the original CSV field name `storage_size_mb`; query times are medians over ten repetitions after one warmup.
+
+| Existing path | Storage (MiB) | Full load (s) | Monthly aggregate (s) |
+|---|---:|---:|---:|
+| CSV + pandas | 5.976842 | 0.089954 | 0.079378 |
+| Parquet + pandas | 0.957728 | 0.004449 | 0.012793 |
+| DuckDB wide table | 1.261719 | 0.046459 | 0.018984 |
+
+For this saved workload, Parquet read with pandas has the smallest file and lowest median loading and aggregation times. The existing comparison does not satisfy the required PostgreSQL and DuckDB-directly-over-Parquet paths. Complete those paths with the same dataset, aggregate, equivalent results and comparable measurement boundaries before making a three-engine lab verdict.
+
+The separate optimization snapshot reports 19.16× isolated CSV-to-Parquet loading speedup, while older prose records 17.29×; preserve these as separate historical measurements. The saved downstream pipeline still spends 95.31% of runtime in database loading and excludes ingestion. Neither result establishes a cold full-pipeline speedup.
+
+### Lineage, quality and personal-data assessment
+
+The implemented lineage is NASA POWER → preserved serialized JSON/manifest → interim CSV → quality gate → DuckDB facts → daily mart → monthly view and ML features. BigQuery and storage experiments are separate branches. The [lineage register](docs/data_lineage.md) identifies physical artifacts and gaps, including missing fact-to-request keys and aggregate-only quality diagnostics.
+
+The dataset contains daily environmental values, source labels and configured city-point coordinates, with no names, contact details, household identifiers or other documented fields identifying a person. Based on this schema, the weather dataset does not appear to be personal data under the identifiable-person definition in Tanzania's [Personal Data Protection Act, published by PDPC](https://www.pdpc.go.tz/media/media/THE_PERSONAL_DATA_PROTECTION_ACT.pdf). This dataset-specific assessment must be revisited if person-linked farm/household coordinates, user accounts or individual records are joined; it does not establish general institutional compliance. Credentials and user-identifying operational records are separate from the weather dataset and must stay out of a public submission.
+
+### Refresh and ML limits to explain aloud
+
+Observation coverage ends on 2025-12-31. A successful rebuild in October 2026 says when the archive was refreshed, not that October weather is present. Dedicated refresh metadata, a computed consumer freshness label and a deliberately failed-refresh demonstration remain missing.
+
+NASA's [data FAQ](https://power.larc.nasa.gov/docs/faqs/data/) reports approximately 2–3 days of meteorological and 5–7 days of solar publication latency. Current ML exports include same-day weather and short historical windows, so they are illustrative retrospective preparation, not verified operational next-day predictors. The [ML availability matrix](docs/ml_data_preparation.md) reviews every exported column and the next-day targets that cross the feature-date split boundaries. Proposed predictor exclusions and boundary purges await Phase 2; no predictive model performance is claimed.
+
+Phase 1 changes documentation only. Review it before authorizing Phase 2 technical work; no staging, commit or push has been performed.
+
+## Executed Phase 2 and presentation handover
+
+The [Phase 2 report](docs/phase2_implementation_and_evidence.md) contains measured outcomes and reproduction commands. Start your presentation with the [colleague guide](docs/colleague_presentation_guide.md); use the [current tracker matrix](docs/lab_requirements_tracker.md#current-phase-2-status--supersedes-the-phase-1-snapshot-above) to answer completion questions. [Manual submission guidance](docs/manual_github_submission.md) identifies files to include/exclude and preserves your control over staging, commits and pushes.
+
+Executed results: two cached ingestion runs reproduce the original dataset hash; an isolated 11-row fixture produces four accepted/seven quarantined rows and a failing quality gate; all required benchmark engines return 2,400 equivalent groups. The full cached workflow changed from 589.800996 seconds to 29.499108 seconds with identical ordered measurement values/counts, an observed 19.99× improvement. Both comparison runs passed **69 tests**; historical figures elsewhere remain separate evidence.
+
+New ML exports contain 72,728 rows and exclude unavailable same-day predictors while using conservative delayed histories and target-boundary purges. The lag assumption still needs actual publication-vintage evidence for operational use. Serving refresh now records success/failure and preserves the last good table after failure. The [generated dashboard](outputs/evidence/hydromet_dashboard.html) consumes the curated monthly view; a [failed-refresh snapshot](outputs/evidence/dashboard_failed_refresh.html) retains the demonstration.
+
+The PostgreSQL benchmark ran in an isolated temporary cluster, which was stopped afterward; the original service remains available. Established raw/interim data, historical outputs and unrelated local edits were preserved. No dependencies were installed or changed. No staging, commit or push was performed. True cold API profiling, source-vintage verification, final page layout and completed cloud-job byte statistics remain unresolved; cloud deployment and predictive accuracy are not claimed.
+
+Final handover verification: **70 tests passed in 8.04 seconds**, including refusal to benchmark against a different PostgreSQL cluster. The two profiling snapshots each ran 69 tests before this additional safety test was added; their historical timing/evidence is preserved. See `outputs/evidence/regression_final.txt` and the [changed-file list](outputs/evidence/changed_files.txt).

@@ -1,0 +1,25 @@
+{
+  "status": "PASS",
+  "last_good_output_unchanged": true,
+  "logical_sha256": "404a79af668a4ae827aa0833d7967eb768bc173bc70ab9bcf8354eb3c094bd0e",
+  "last_successful_refresh_at": "2026-10-04T19:15:39.989590+00:00",
+  "failed_attempt_at": "2026-10-04T19:18:10.145061+00:00",
+  "freshness": {
+    "label": "FAILED_REFRESH",
+    "refresh_age_hours": 0.04207201305555556,
+    "threshold_hours": 24,
+    "observation_coverage_end": "2025-12-31"
+  },
+  "dashboard": {
+    "output": "D:\\NMAIST_MASTERS LIFE\\Semister 2 Courses\\DATA ENGINEERING AND ANALYTICS\\Projects\\hydromet-data-pipeline\\outputs\\evidence\\dashboard_failed_refresh.html",
+    "monthly_rows": 2400,
+    "source_object": "vw_monthly_climate_summary",
+    "freshness": {
+      "label": "FAILED_REFRESH",
+      "refresh_age_hours": 0.04205391861111111,
+      "threshold_hours": 24,
+      "observation_coverage_end": "2025-12-31"
+    },
+    "generated_at": "2026-10-04T19:18:11.383697+00:00"
+  }
+}

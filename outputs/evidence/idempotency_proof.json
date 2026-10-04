@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "mode": "cached_offline",
+  "sha256": "fdab2668f283fe9531b39506ebb4325a462d9283ed5434d1cfaa67e8d743a8b9",
+  "run_ids": [
+    "20261004T190323748844Z",
+    "20261004T190340255653Z"
+  ],
+  "rows_each_run": 73048,
+  "rejected_each_run": 0,
+  "duplicate_keys_each_run": 0,
+  "distinct_summaries_retained": true
+}

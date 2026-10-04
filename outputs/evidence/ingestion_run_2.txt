@@ -1,0 +1,21 @@
+2026-10-04 22:03:25,001 | INFO | Starting NASA POWER ingestion.
+2026-10-04 22:03:25,008 | INFO | Processing Arusha (request_id=119dcc628fbe824b)
+2026-10-04 22:03:25,011 | INFO | Existing validated raw file found. Skipping API.
+2026-10-04 22:03:25,636 | INFO | Processing Dar_es_Salaam (request_id=34fea2903da3ff48)
+2026-10-04 22:03:25,641 | INFO | Existing validated raw file found. Skipping API.
+2026-10-04 22:03:26,139 | INFO | Processing Dodoma (request_id=be30bb749451583a)
+2026-10-04 22:03:26,150 | INFO | Existing validated raw file found. Skipping API.
+2026-10-04 22:03:26,645 | INFO | Processing Mbeya (request_id=99723df07c4bb3c1)
+2026-10-04 22:03:26,647 | INFO | Existing validated raw file found. Skipping API.
+2026-10-04 22:03:27,853 | INFO | Processing Morogoro (request_id=c63ec5be4b14dd50)
+2026-10-04 22:03:27,858 | INFO | Existing validated raw file found. Skipping API.
+2026-10-04 22:03:30,800 | INFO | Processing Mwanza (request_id=4a11d5617d49c695)
+2026-10-04 22:03:30,806 | INFO | Existing validated raw file found. Skipping API.
+2026-10-04 22:03:33,176 | INFO | Processing Songea (request_id=a0373710801764f0)
+2026-10-04 22:03:33,178 | INFO | Existing validated raw file found. Skipping API.
+2026-10-04 22:03:35,731 | INFO | Processing Tabora (request_id=206ca1ffded08dd7)
+2026-10-04 22:03:35,738 | INFO | Existing validated raw file found. Skipping API.
+2026-10-04 22:03:38,815 | INFO | Rows read=73048 loaded=73048 rejected=0 reasons={}
+2026-10-04 22:03:40,259 | INFO | Final interim dataset contains 73,048 rows.
+2026-10-04 22:03:40,259 | INFO | Ingestion run summary saved to D:\NMAIST_MASTERS LIFE\Semister 2 Courses\DATA ENGINEERING AND ANALYTICS\Projects\hydromet-data-pipeline\data\processed\lab_evidence\paired_ingestion\reports\ingestion_run_summary.json
+2026-10-04 22:03:40,260 | INFO | NASA POWER ingestion completed successfully.

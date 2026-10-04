@@ -512,3 +512,6 @@ earlier units:
 
 The result is a cloud-ready architecture that can scale as future
 data volume, source diversity and analytical requirements increase.
+## Phase 1 cloud evidence clarification
+
+Inspected screenshots show historical sandbox results and pre-run query estimates, not completed-job byte statistics. The selected-column query also adds a date filter; this comparison does not isolate projection causally or establish partition pruning. No cloud refresh or scheduler deployment is verified. The concise [proposed cloud design](cloud_design_one_page.md) lists every connection and component cost driver; final rendered page count remains to be checked.

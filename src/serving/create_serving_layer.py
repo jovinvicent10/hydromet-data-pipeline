@@ -1,184 +1,98 @@
-"""
-HydroMet-ETL
-Unit 7 / Week 8: Analytics Serving Layer
-
-Creates:
-    1. mart_weather_daily
-    2. vw_monthly_climate_summary
-
-The serving layer converts the observation-level analytical
-star schema into consumer-friendly analytical products.
-"""
-
+"""Transactional curated refresh with last-good metadata and failure tracking."""
+import argparse
+from datetime import datetime, timezone
+import hashlib
+import json
 from pathlib import Path
-
 import duckdb
 
-
-# ------------------------------------------------------------
-# Project paths
-# ------------------------------------------------------------
-
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-
-DATABASE_PATH = (
-    PROJECT_ROOT
-    / "data"
-    / "database"
-    / "hydromet.duckdb"
-)
-
-SQL_PATH = (
-    PROJECT_ROOT
-    / "sql"
-    / "05_create_serving_layer.sql"
-)
+DATABASE_PATH = PROJECT_ROOT / 'data/database/hydromet.duckdb'
+SQL_PATH = PROJECT_ROOT / 'sql/05_create_serving_layer.sql'
+METADATA_PATH = PROJECT_ROOT / 'metadata/serving_refresh.json'
+EXPECTED_DAILY_ROWS = 73048
+EXPECTED_MONTHLY_ROWS = 2400
 
 
-# ------------------------------------------------------------
-# Expected current baseline
-# ------------------------------------------------------------
-
-EXPECTED_DAILY_ROWS = 73_048
-EXPECTED_MONTHLY_ROWS = 2_400
+def utc_now():
+    return datetime.now(timezone.utc).isoformat()
 
 
-def create_serving_layer():
-    """
-    Create and validate the HydroMet analytics serving layer.
-    """
+def atomic_json(path, value):
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temp = path.with_suffix('.json.tmp')
+    temp.write_text(json.dumps(value, indent=2), encoding='utf-8')
+    temp.replace(path)
 
-    print("=" * 60)
-    print("HydroMet-ETL Analytics Serving Layer")
-    print("=" * 60)
 
-    if not DATABASE_PATH.exists():
-        raise FileNotFoundError(
-            f"DuckDB database not found: {DATABASE_PATH}"
-        )
+def freshness_label(metadata, now=None, threshold_hours=24):
+    now = now or datetime.now(timezone.utc)
+    last_good = metadata.get('last_successful_refresh_at')
+    age = None if not last_good else (now - datetime.fromisoformat(last_good)).total_seconds() / 3600
+    if metadata.get('last_attempt_status') == 'FAILED':
+        label = 'FAILED_REFRESH'
+    elif age is None:
+        label = 'UNKNOWN'
+    else:
+        label = 'FRESH' if age <= threshold_hours else 'STALE'
+    return {'label': label, 'refresh_age_hours': age, 'threshold_hours': threshold_hours,
+            'observation_coverage_end': metadata.get('observation_coverage_end')}
 
-    if not SQL_PATH.exists():
-        raise FileNotFoundError(
-            f"Serving SQL file not found: {SQL_PATH}"
-        )
 
-    sql = SQL_PATH.read_text(encoding="utf-8")
-
-    connection = duckdb.connect(str(DATABASE_PATH))
-
+def create_serving_layer(database_path=None, metadata_path=None, simulate_failure=False):
+    database_path = Path(database_path or DATABASE_PATH)
+    metadata_path = Path(metadata_path or METADATA_PATH)
+    metadata = json.loads(metadata_path.read_text(encoding='utf-8-sig')) if metadata_path.exists() else {}
+    metadata.update({'output_name':'mart_weather_daily', 'last_attempt_at':utc_now(), 'last_attempt_status':'RUNNING'})
+    atomic_json(metadata_path, metadata)
+    connection = None
     try:
-        print("\nCreating analytics serving layer...")
-
-        connection.execute(sql)
-
-        print("Serving layer created successfully.")
-
-        # ----------------------------------------------------
-        # Validate daily mart
-        # ----------------------------------------------------
-
-        daily_rows = connection.execute(
-            """
-            SELECT COUNT(*)
-            FROM mart_weather_daily
-            """
-        ).fetchone()[0]
-
-        daily_locations = connection.execute(
-            """
-            SELECT COUNT(DISTINCT location_name)
-            FROM mart_weather_daily
-            """
-        ).fetchone()[0]
-
-        duplicate_daily_grain = connection.execute(
-            """
-            SELECT COUNT(*)
-            FROM (
-                SELECT
-                    location_name,
-                    observation_date,
-                    source_name,
-                    COUNT(*) AS row_count
-                FROM mart_weather_daily
-                GROUP BY
-                    location_name,
-                    observation_date,
-                    source_name
-                HAVING COUNT(*) > 1
-            )
-            """
-        ).fetchone()[0]
-
-        # ----------------------------------------------------
-        # Validate monthly consumer view
-        # ----------------------------------------------------
-
-        monthly_rows = connection.execute(
-            """
-            SELECT COUNT(*)
-            FROM vw_monthly_climate_summary
-            """
-        ).fetchone()[0]
-
-        print("\nValidation")
-        print("-" * 60)
-        print(f"Daily mart rows:       {daily_rows:,}")
-        print(f"Locations:             {daily_locations}")
-        print(f"Duplicate daily grain: {duplicate_daily_grain}")
-        print(f"Monthly view rows:     {monthly_rows:,}")
-
-        # ----------------------------------------------------
-        # Current baseline checks
-        # ----------------------------------------------------
-
-        if daily_rows != EXPECTED_DAILY_ROWS:
-            raise ValueError(
-                "Unexpected daily mart row count. "
-                f"Expected {EXPECTED_DAILY_ROWS:,}, "
-                f"found {daily_rows:,}."
-            )
-
-        if monthly_rows != EXPECTED_MONTHLY_ROWS:
-            raise ValueError(
-                "Unexpected monthly view row count. "
-                f"Expected {EXPECTED_MONTHLY_ROWS:,}, "
-                f"found {monthly_rows:,}."
-            )
-
-        if daily_locations != 8:
-            raise ValueError(
-                f"Expected 8 locations, found {daily_locations}."
-            )
-
-        if duplicate_daily_grain != 0:
-            raise ValueError(
-                "Duplicate rows detected in the daily mart grain."
-            )
-
-        print("\nServing layer validation: PASS")
-
-        # ----------------------------------------------------
-        # Display a sample
-        # ----------------------------------------------------
-
-        print("\nSample monthly climate records")
-        print("-" * 60)
-
-        sample = connection.execute(
-            """
-            SELECT *
-            FROM vw_monthly_climate_summary
-            ORDER BY location_name, year, month
-            LIMIT 10
-            """
-        ).fetchdf()
-
-        print(sample.to_string(index=False))
-
+        if not database_path.exists():
+            raise FileNotFoundError(database_path)
+        connection = duckdb.connect(str(database_path))
+        connection.execute('BEGIN TRANSACTION')
+        connection.execute(SQL_PATH.read_text(encoding='utf-8'))
+        rows, locations, duplicates = connection.execute('''SELECT COUNT(*), COUNT(DISTINCT location_name),
+            COUNT(*)-COUNT(DISTINCT (observation_date,location_name,source_name)) FROM mart_weather_daily''').fetchone()
+        monthly = connection.execute('SELECT COUNT(*) FROM vw_monthly_climate_summary').fetchone()[0]
+        if (rows,locations,duplicates,monthly) != (EXPECTED_DAILY_ROWS,8,0,EXPECTED_MONTHLY_ROWS):
+            raise ValueError(f'Unexpected serving counts {(rows,locations,duplicates,monthly)}')
+        frame = connection.execute('SELECT * FROM mart_weather_daily ORDER BY location_name,source_name,observation_date').fetchdf()
+        fingerprint = hashlib.sha256(frame.to_csv(index=False).encode()).hexdigest()
+        if simulate_failure:
+            # Fail AFTER replacing the table within the transaction, proving rollback.
+            raise RuntimeError('DELIBERATE_REFRESH_FAILURE')
+        finished = utc_now()
+        connection.execute('CREATE TABLE IF NOT EXISTS serving_refresh_metadata (output_name VARCHAR PRIMARY KEY, refreshed_at TIMESTAMPTZ, logical_sha256 VARCHAR)')
+        connection.execute('INSERT OR REPLACE INTO serving_refresh_metadata VALUES (?,?,?)', ['mart_weather_daily',finished,fingerprint])
+        connection.execute('COMMIT')
+        metadata.update({'last_attempt_status':'SUCCESS', 'last_successful_refresh_at':finished,
+                         'logical_sha256':fingerprint, 'rows':rows,
+                         'observation_coverage_start':str(frame.observation_date.min().date()),
+                         'observation_coverage_end':str(frame.observation_date.max().date()),
+                         'last_error':None})
+        atomic_json(metadata_path, metadata)
+        print(f'Serving refreshed: {rows} daily rows; {monthly} monthly groups')
+        return metadata
+    except Exception as error:
+        if connection is not None:
+            try:
+                connection.execute('ROLLBACK')
+            except duckdb.Error:
+                pass
+        metadata.update({'last_attempt_status':'FAILED', 'last_attempt_finished_at':utc_now(), 'last_error':str(error)})
+        atomic_json(metadata_path, metadata)
+        raise
     finally:
-        connection.close()
+        if connection is not None:
+            connection.close()
 
 
-if __name__ == "__main__":
-    create_serving_layer()
+if __name__ == '__main__':
+    parser=argparse.ArgumentParser()
+    parser.add_argument('--database', type=Path, default=DATABASE_PATH)
+    parser.add_argument('--metadata', type=Path, default=METADATA_PATH)
+    parser.add_argument('--simulate-failure', action='store_true')
+    args=parser.parse_args()
+    create_serving_layer(args.database,args.metadata,args.simulate_failure)

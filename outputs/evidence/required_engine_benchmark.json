@@ -1,0 +1,57 @@
+{
+  "status": "PASS",
+  "dataset_sha256": "fdab2668f283fe9531b39506ebb4325a462d9283ed5434d1cfaa67e8d743a8b9",
+  "rows": 73048,
+  "aggregate": "Mean daily precipitation by location/year/month, full interval, NASA_POWER",
+  "warmups": 1,
+  "repetitions": 5,
+  "cold_run": false,
+  "absolute_tolerance": 1e-09,
+  "timing_boundary": "Client wall time including reading/query execution and result materialization. PostgreSQL includes psql process/connection/CSV parse; DuckDB includes fresh connection and fetchdf; pandas includes CSV parse.",
+  "storage_definition": "CSV/Parquet file bytes; PostgreSQL pg_total_relation_size includes table, primary-key index and TOAST; cluster overhead excluded.",
+  "postgres_load_seconds": 0.5495969000039622,
+  "results": [
+    {
+      "engine": "CSV + pandas",
+      "storage_bytes": 6267173,
+      "storage_mib": 5.976841926574707,
+      "median_seconds": 0.10457770002540201,
+      "timings_seconds": [
+        0.10457770002540201,
+        0.10914439999032766,
+        0.10391669999808073,
+        0.10068069997942075,
+        0.4280570999835618
+      ],
+      "groups": 2400
+    },
+    {
+      "engine": "PostgreSQL",
+      "storage_bytes": 13721600,
+      "storage_mib": 13.0859375,
+      "median_seconds": 0.1386631000204943,
+      "timings_seconds": [
+        0.15926719998242334,
+        0.15004929999122396,
+        0.13269870000658557,
+        0.1386631000204943,
+        0.1307752999709919
+      ],
+      "groups": 2400
+    },
+    {
+      "engine": "DuckDB over Parquet",
+      "storage_bytes": 975015,
+      "storage_mib": 0.9298467636108398,
+      "median_seconds": 0.08216910000192001,
+      "timings_seconds": [
+        0.08461180003359914,
+        0.08379880001302809,
+        0.08216910000192001,
+        0.05796060001011938,
+        0.05527859996072948
+      ],
+      "groups": 2400
+    }
+  ]
+}

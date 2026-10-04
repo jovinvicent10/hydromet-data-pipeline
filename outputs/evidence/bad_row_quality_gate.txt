@@ -1,0 +1,22 @@
+{
+  "overall_status": "FAIL",
+  "input_file": "D:\\NMAIST_MASTERS LIFE\\Semister 2 Courses\\DATA ENGINEERING AND ANALYTICS\\Projects\\hydromet-data-pipeline\\data\\processed\\lab_evidence\\bad_rows\\bad_input.csv",
+  "dataset_sha256": "af2ca6c3a47cfc216dd19e78a4fa7b0e761ad1c79245a41c58d499ee9883947b",
+  "validated_at": "2026-10-04T19:24:06.956929+00:00",
+  "row_accounting": {
+    "rows_read": 11,
+    "rows_loaded": 4,
+    "rows_rejected": 7,
+    "rejection_reason_counts": {
+      "DUPLICATE_KEY": 2,
+      "HUMIDITY_RANGE": 1,
+      "INVALID_DATE": 1,
+      "INVALID_NUMERIC_T2M": 1,
+      "MISSING_REQUIRED": 1,
+      "NEGATIVE_PRECTOTCORR": 1,
+      "NEGATIVE_WS2M": 1,
+      "PROVIDER_FILL_WS2M": 1
+    }
+  },
+  "reason": "Hard row validation failed; downstream refresh is blocked"
+}

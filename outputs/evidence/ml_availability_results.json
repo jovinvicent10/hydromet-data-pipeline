@@ -1,0 +1,55 @@
+{
+  "prediction_task": "Issue at end of local-solar day t for precipitation on t+1",
+  "weather_delay_days": 8,
+  "predictor_allowlist": [
+    "latitude",
+    "longitude",
+    "month",
+    "day_of_year",
+    "precip_lag_8",
+    "precip_lag_14",
+    "precip_lag_30",
+    "precip_mean_7d_available",
+    "precip_mean_30d_available",
+    "temperature_mean_7d_available",
+    "humidity_mean_7d_available"
+  ],
+  "excluded_predictors": [
+    "t2m",
+    "t2m_min",
+    "t2m_max",
+    "rh2m",
+    "prectotcorr",
+    "ws2m",
+    "allsky_sfc_sw_dwn",
+    "precip_lag_1",
+    "precip_lag_3",
+    "target_precip_next_day"
+  ],
+  "availability_status": "Conservative lag assumption; actual publication timestamps and historical vintages unverified",
+  "target_boundary_rows_removed": 16,
+  "history_or_target_rows_removed": 304,
+  "ml_ready_rows": 72728,
+  "file_sha256": {
+    "ml_weather_availability_features.parquet": "3eed4eba077a2a3314ec912630edaedfab9f94985f043be6dfca670e7be1989f",
+    "ml_weather_availability_train.parquet": "f093d8a7c26d82c7109476bd2187b6afd60790a19bc8c23ba1d5dfe4bf20d76a",
+    "ml_weather_availability_validation.parquet": "7c931989518afc0890555ce19e22820634516db622c668909b4a607c794ca361",
+    "ml_weather_availability_test.parquet": "8256e16ca95534d2e971b709e422945ead0c24930bec5bb6565daac45d25d9a9"
+  },
+  "source_database": "D:\\NMAIST_MASTERS LIFE\\Semister 2 Courses\\DATA ENGINEERING AND ANALYTICS\\Projects\\hydromet-data-pipeline\\data\\processed\\lab_evidence\\profile_after\\hydromet.duckdb",
+  "train": {
+    "rows": 52288,
+    "feature_end": "2018-12-30",
+    "target_end": "2018-12-31"
+  },
+  "validation": {
+    "rows": 8760,
+    "feature_end": "2021-12-30",
+    "target_end": "2021-12-31"
+  },
+  "test": {
+    "rows": 11680,
+    "feature_end": "2025-12-30",
+    "target_end": "2025-12-31"
+  }
+}

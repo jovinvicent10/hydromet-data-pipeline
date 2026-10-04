@@ -64,7 +64,7 @@ VARIABLE_METADATA = {
     },
     "ALLSKY_SFC_SW_DWN": {
         "name": "All-sky surface shortwave downward irradiance",
-        "unit": "kWh/m2/day",
+        "unit": "MJ/m2/day",
         "description": "Daily surface shortwave solar radiation",
     },
 }
@@ -323,6 +323,9 @@ def load_dim_variable(
         "variable_df"
     )
 
+    # Existing baseline values are native MJ; correct labels, not values.
+    connection.execute("UPDATE dim_variable SET unit = 'MJ/m2/day' WHERE variable_code = 'ALLSKY_SFC_SW_DWN'")
+
 
 def load_dim_source(
     connection: duckdb.DuckDBPyConnection,
@@ -401,7 +404,7 @@ def load_fact_observation(
 
     connection.execute(
         """
-        INSERT OR IGNORE INTO fact_observation (
+        INSERT INTO fact_observation (
             observation_id,
             date_id,
             location_id,
@@ -454,6 +457,14 @@ def load_fact_observation(
         JOIN dim_source s
             ON s.source_name =
                'NASA_POWER'
+
+        WHERE NOT EXISTS (
+            SELECT 1 FROM fact_observation existing
+            WHERE existing.date_id = d.date_id
+              AND existing.location_id = l.location_id
+              AND existing.variable_id = v.variable_id
+              AND existing.source_id = s.source_id
+        )
         """
     )
 

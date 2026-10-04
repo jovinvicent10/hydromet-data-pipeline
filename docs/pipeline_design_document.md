@@ -43,35 +43,17 @@ The pipeline therefore addresses:
 
 # 2. Problem Statement
 
-Hydrometeorological information is important for applications such
-as:
+The project preserves three original data problems:
 
-- agricultural planning;
-- climate analysis;
-- crop monitoring;
-- drought assessment;
-- disease-risk modelling;
-- environmental monitoring; and
-- early-warning systems.
+1. **Limited spatial coverage:** 25 years of daily data at eight configured points do not establish exhaustive or representative national coverage.
+2. **Single-source dependency:** NASA POWER is the only integrated provider, limiting independent validation and creating acquisition dependency.
+3. **Statistical extremes:** pooled IQR screening identifies unusual values that may represent real events and require contextual review rather than automatic deletion.
 
-However, obtaining data from an API is only the first step.
+HydroMet-ETL provides reproducible acquisition, preserved raw responses, validation, analytical storage, serving and ML preparation. Spatial expansion, independent source harmonization and persisted observation-level review remain extensions. Engineering controls make these limitations explicit but do not by themselves resolve them.
 
-A trustworthy analytical system must also ensure that data can be:
+The engineering question is: how can daily hydrometeorological data become reproducible and traceable while managing limited spatial coverage, single-source dependency and statistical extremes?
 
-1. acquired consistently;
-2. reproduced later;
-3. validated automatically;
-4. traced to its source;
-5. stored efficiently;
-6. queried easily;
-7. rerun without creating duplicates; and
-8. extended when additional data sources become available.
-
-HydroMet-ETL therefore addresses the following engineering question:
-
-> How can hydrometeorological observations from external data
-> services be transformed into a reproducible, validated, traceable
-> and analytically useful data asset?
+The complete [problem statement](data_problem_statement.md) links each problem to evidence, objectives and acceptance criteria. Supporting contracts are the [schema rationale](database_schema.md), [lineage](data_lineage.md), [metrics](metrics.md), [dictionary](data_dictionary.md) and [dataset datasheet](dataset_datasheet.md). These documents distinguish saved evidence from future work, including the solar-unit metadata discrepancy and ML target-time split boundary limitation.
 
 ---
 
@@ -821,3 +803,8 @@ python -m src.database.load_duckdb
 python -m src.benchmarking.benchmark_storage
 
 python -m pytest -v
+```
+
+## Phase 1 evidence clarification
+
+The earlier 25-pass statement describes Unit 6 history, not the latest retained suite log. The inspected orchestration regression log records 54 passed in 2.35 seconds; the README's earlier 65-pass claim remains unverified. The [lab tracker](lab_requirements_tracker.md) is the current completion assessment and the [audit](phase1_evidence_audit.md) identifies what was checked without rerunning the pipeline. Cloud deployment, quarantine, operational availability-safe predictors and complete cold-run profiling remain outstanding.

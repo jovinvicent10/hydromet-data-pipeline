@@ -1,0 +1,11 @@
+{
+  "correctness": "PASS",
+  "same_logical_facts": true,
+  "before_seconds": 589.8009962000069,
+  "after_seconds": 29.499107499956153,
+  "speedup": 19.993859007459246,
+  "time_reduction_percent": 94.99846428032266,
+  "method": "One paired cached full-workflow run; identical original database copied before each; only loader implementation differs (anti-join and native solar-unit label correction); measurement values unchanged",
+  "cold_api_run": false,
+  "repetitions": 1
+}

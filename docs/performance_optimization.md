@@ -253,3 +253,12 @@ Run baseline profiling using:
 
 ```powershell
 python -m src.optimization.profile_pipeline
+```
+
+## Phase 1 evidence clarification
+
+The current saved optimization JSON reports 19.158559× isolated loading speedup, 94.780401% time reduction and 83.976013% storage reduction. Older 17.29× narrative values above are retained historical prose and do not match that JSON; the original corresponding run artifact has not been verified. The six-stage downstream orchestration excludes ingestion and is dominated by database loading, so neither this experiment nor its operation profile establishes a full cold-pipeline improvement. See [metrics](metrics.md) and [audit](phase1_evidence_audit.md).
+
+## Phase 2 full-workflow comparison
+
+New retained evidence compares all eight cached workflow stages including offline ingestion, tests and dashboard construction. Full workflow: 589.800996 s before → 29.499108 s after; database load: 553.438081 s before → approximately 4.43 s after. Filtering existing natural keys before insertion is the targeted improvement; measurement values/counts match and both runs pass 69 tests. This is one paired cached reload, not a cold API profile or a timing distribution. The older isolated CSV/Parquet experiments remain separate historical evidence. See `outputs/evidence/pipeline_improvement.json` and [Phase 2 report](phase2_implementation_and_evidence.md).

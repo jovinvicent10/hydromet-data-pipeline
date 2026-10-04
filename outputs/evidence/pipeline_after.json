@@ -1,0 +1,60 @@
+{
+  "status": "SUCCESS",
+  "profile": "after",
+  "mode": "cached_offline_ingestion_existing_database_reload",
+  "cold_api_run": false,
+  "duration_seconds": 29.499107499956153,
+  "stages": [
+    {
+      "stage": "ingestion",
+      "status": "SUCCESS",
+      "duration_seconds": 12.754668100038543
+    },
+    {
+      "stage": "data_quality",
+      "status": "SUCCESS",
+      "duration_seconds": 1.1728331000194885
+    },
+    {
+      "stage": "database_schema",
+      "status": "SUCCESS",
+      "duration_seconds": 0.2386137999710627
+    },
+    {
+      "stage": "database_load",
+      "status": "SUCCESS",
+      "duration_seconds": 4.42812449997291
+    },
+    {
+      "stage": "serving_layer",
+      "status": "SUCCESS",
+      "duration_seconds": 1.9818105999729596
+    },
+    {
+      "stage": "ml_preparation",
+      "status": "SUCCESS",
+      "duration_seconds": 1.3688227000529878
+    },
+    {
+      "stage": "consumer_dashboard",
+      "status": "SUCCESS",
+      "duration_seconds": 0.1707623999682255
+    },
+    {
+      "stage": "regression_tests",
+      "status": "SUCCESS",
+      "duration_seconds": 7.381642799999099
+    }
+  ],
+  "counts": {
+    "fact_observation": 511336,
+    "mart_weather_daily": 73048,
+    "vw_monthly_climate_summary": 2400
+  },
+  "source_sha256": "fdab2668f283fe9531b39506ebb4325a462d9283ed5434d1cfaa67e8d743a8b9",
+  "logical_fact_sha256": "a155802c7d4e7d7788003e67c745e0e36244ced613bae354cb07e47a4cf7afbe",
+  "baseline_code_revision": "df0a67cf875fa731a10de4ed8a61afd8188b3884",
+  "python": "3.13.9 (tags/v3.13.9:8183fa5, Oct 14 2025, 14:09:13) [MSC v.1944 64 bit (AMD64)]",
+  "duckdb": "1.5.5",
+  "pandas": "3.0.5"
+}

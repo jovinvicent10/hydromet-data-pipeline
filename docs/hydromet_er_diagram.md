@@ -66,3 +66,4 @@ erDiagram
         TIMESTAMP flagged_at
         VARCHAR notes
     }
+```
