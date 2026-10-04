@@ -1,269 +1,830 @@
 # HydroMet-ETL
 
-## A Reproducible Hydrometeorological Data Engineering Pipeline
-for Climate and Agricultural Analytics in Tanzania
+## A Reproducible Hydrometeorological Data Engineering Pipeline for Climate and Agricultural Analytics in Tanzania
 
-HydroMet-ETL is a semester project developed for DSAI 6226 –
-Data Engineering and Analytics at the Nelson Mandela African
-Institution of Science and Technology.
+HydroMet-ETL is an end-to-end data engineering project developed for
+**DSAI 6226 — Data Engineering and Analytics** at the Nelson Mandela
+African Institution of Science and Technology (NM-AIST).
 
-The project demonstrates a reproducible data-engineering workflow
-for acquiring, validating, preserving, modelling, storing, and
-benchmarking daily hydrometeorological data from NASA POWER.
+The project demonstrates how hydrometeorological data can be acquired,
+validated, transformed, modeled, benchmarked, served, prepared for
+machine learning, and orchestrated using reproducible data-engineering
+practices.
 
-## Current Project Status
+The primary data source is the **NASA POWER Daily API**.
 
-Weeks 1–4 are implemented.
+---
 
-### Week 1 — Data Profiling and Problem Identification
+## 1. Project Motivation
 
-The NASA POWER dataset was profiled for structural, temporal,
-statistical, and engineering quality.
+Climate and agricultural analytics require more than simply
+downloading weather data.
 
-Validated baseline:
+A usable data platform must address questions such as:
 
-- 73,048 location-day records
-- 8 configured locations
-- 9,131 dates
-- 2001-01-01 to 2025-12-31
-- 7 meteorological variables
-- 0 duplicate location-date observations
-- 0 missing daily dates
-- 0 ordinary missing meteorological values
-- 12,529 IQR statistical flags
+- Where did the data come from?
+- Can ingestion be reproduced?
+- Has the data been validated?
+- Are repeated runs safe?
+- What is the analytical grain?
+- Which storage format is appropriate?
+- Can analysts query the data easily?
+- Can the data be prepared safely for machine learning?
+- Can pipeline failures be detected?
+- Can another engineer operate the system?
 
-The three primary engineering limitations identified were:
+HydroMet-ETL addresses these questions through an integrated data
+engineering pipeline.
 
-1. limited point-based spatial representation;
-2. single-source dependency;
-3. need for systematic extreme-value quality assessment.
+---
 
-IQR flags are diagnostic signals and are not automatically treated
-as erroneous observations.
+## 2. Study Dataset
 
-### Week 2 — DuckDB Dimensional Model
+The project currently uses daily hydrometeorological observations for
+eight configured locations in Tanzania.
 
-A star-schema analytical model was implemented using:
+The dataset covers:
 
-- dim_location
-- dim_date
-- dim_variable
-- dim_source
-- fact_observation
-- fact_quality_flag
+```text
+2001-01-01 to 2025-12-31
+```
+
+and contains:
+
+```text
+73,048 location-day records
+```
+
+across:
+
+```text
+8 locations
+```
+
+and:
+
+```text
+7 meteorological variables
+```
+
+The variables are:
+
+| Variable | Description |
+|---|---|
+| T2M | Temperature at 2 metres |
+| T2M_MIN | Minimum temperature at 2 metres |
+| T2M_MAX | Maximum temperature at 2 metres |
+| RH2M | Relative humidity at 2 metres |
+| PRECTOTCORR | Corrected precipitation |
+| WS2M | Wind speed at 2 metres |
+| ALLSKY_SFC_SW_DWN | All-sky surface shortwave downward irradiance |
+
+---
+
+## 3. Configured Locations
+
+The canonical project configuration contains eight Tanzanian
+locations:
+
+- Arusha
+- Dodoma
+- Dar es Salaam
+- Morogoro
+- Mbeya
+- Mwanza
+- Songea
+- Tabora
+
+The project is therefore a point-based hydrometeorological pipeline
+and should not be interpreted as exhaustive spatial coverage of
+Tanzania.
+
+---
+
+## 4. End-to-End Architecture
+
+```text
+                    NASA POWER DAILY API
+                             |
+                             v
+                  +----------------------+
+                  |   INGESTION LAYER    |
+                  +----------------------+
+                             |
+                Raw JSON / SHA-256 / Manifest
+                             |
+                             v
+                  73,048 location-day rows
+                             |
+                             v
+                  +----------------------+
+                  |  DATA QUALITY GATE   |
+                  +----------------------+
+                             |
+              Schema / completeness / integrity
+              physical rules / temporal checks
+                             |
+                             v
+              +------------------------------+
+              | STORAGE & ANALYTICAL MODEL   |
+              +------------------------------+
+                 |          |          |
+                CSV      Parquet     DuckDB
+                                        |
+                                        v
+                              Dimensional model
+                                        |
+                                 511,336 facts
+                                        |
+                                        v
+                         +----------------------+
+                         |   SERVING LAYER      |
+                         +----------------------+
+                              |            |
+                              v            v
+                         Daily mart    Monthly view
+                          73,048         2,400
+                              |
+                              v
+                         +----------------------+
+                         |   ML PREPARATION     |
+                         +----------------------+
+                              |
+                       Leakage-aware features
+                              |
+                 +------------+-------------+
+                 |            |             |
+               Train      Validation        Test
+              52,352        8,768         11,680
+                              |
+                              v
+                         +----------------------+
+                         |    ORCHESTRATION     |
+                         +----------------------+
+                              |
+                       Fail-fast execution
+                       Logs / run summaries
+                              |
+                              v
+                         AUTOMATED TESTS
+```
+
+---
+
+## 5. Repository Structure
+
+```text
+hydromet-data-pipeline/
+|
+|-- configs/
+|   `-- config.yaml
+|
+|-- data/
+|   |-- external/
+|   |-- interim/
+|   |-- processed/
+|   `-- raw/
+|
+|-- docs/
+|   |-- analytics_serving.md
+|   |-- cloud_architecture.md
+|   |-- cold_run_checklist.md
+|   |-- data_dictionary.md
+|   |-- data_lineage.md
+|   |-- data_problem_statement.md
+|   |-- database_schema.md
+|   |-- governance_and_quality.md
+|   |-- hydromet_er_diagram.md
+|   |-- ingestion_design.md
+|   |-- ml_data_preparation.md
+|   |-- orchestration_and_handover.md
+|   |-- performance_optimization.md
+|   |-- pipeline_design_document.md
+|   `-- storage_benchmark_report.md
+|
+|-- metadata/
+|   |-- ingestion_manifest.json
+|   `-- ml_split_metadata.json
+|
+|-- notebooks/
+|   |-- 01_initial_data_profiling.ipynb
+|   `-- 02_advanced_data_profiling.ipynb
+|
+|-- outputs/
+|   |-- benchmarks/
+|   |-- cloud/
+|   |-- figures/
+|   |-- optimization/
+|   |-- orchestration/
+|   |-- quality/
+|   `-- reports/
+|
+|-- scripts/
+|   `-- run_pipeline.ps1
+|
+|-- sql/
+|   |-- 01_create_schema.sql
+|   |-- 02_validation_queries.sql
+|   |-- 03_create_views.sql
+|   |-- 04_bigquery_analysis.sql
+|   `-- 05_create_serving_layer.sql
+|
+|-- src/
+|   |-- benchmarking/
+|   |-- database/
+|   |-- ingestion/
+|   |-- ml/
+|   |-- optimization/
+|   |-- orchestration/
+|   |-- quality/
+|   `-- serving/
+|
+|-- tests/
+|
+|-- requirements.txt
+`-- README.md
+```
+
+---
+
+## 6. Reproducible Ingestion
+
+NASA POWER ingestion is implemented under:
+
+```text
+src/ingestion/
+```
+
+The ingestion workflow includes:
+
+- deterministic request identifiers,
+- raw payload preservation,
+- SHA-256 fingerprints,
+- ingestion manifests,
+- retry handling,
+- exponential backoff,
+- cache reuse,
+- deterministic output construction,
+- validation of assembled outputs.
+
+The ingestion design is idempotent: rerunning the same configured
+workflow should not create duplicate observations.
+
+A verified repeated ingestion produced the same dataset SHA-256:
+
+```text
+fdab2668f283fe9531b39506ebb4325a462d9283ed5434d1cfaa67e8d743a8b9
+```
+
+---
+
+## 7. Data Quality
+
+Data-quality validation is implemented in:
+
+```text
+src/quality/validate_hydromet.py
+```
+
+Checks include:
+
+- required schema,
+- missing values,
+- duplicate location-date records,
+- coordinate bounds,
+- relative humidity bounds,
+- non-negative precipitation,
+- non-negative wind speed,
+- non-negative solar radiation,
+- temperature consistency,
+- continuous dates,
+- source consistency,
+- dataset fingerprint,
+- IQR-based statistical warnings.
+
+Verified baseline:
+
+```text
+Rows:           73,048
+Locations:      8
+Dates:          9,131
+Error failures: 0
+IQR flags:      12,529
+Status:         PASS
+```
+
+IQR flags are treated as statistical review indicators rather than
+automatic data errors.
+
+---
+
+## 8. Dimensional Data Model
+
+HydroMet-ETL uses a DuckDB analytical star schema.
+
+Dimensions:
+
+```text
+dim_location
+dim_date
+dim_variable
+dim_source
+```
+
+Fact tables:
+
+```text
+fact_observation
+fact_quality_flag
+```
 
 The fact grain is:
 
-One meteorological variable observed at one location on one date
-from one source.
+> One meteorological variable observed at one location on one date
+> from one source.
 
-The 73,048 wide location-day records therefore produce:
+The wide dataset contains:
 
-73,048 × 7 = 511,336
+```text
+73,048 rows
+```
 
-observation-level facts.
+with seven meteorological variables.
 
-This is a grain transformation, not duplication.
+After normalization to the observation grain:
 
-### Week 3 — Reproducible NASA POWER Ingestion
+```text
+73,048 x 7 = 511,336 observations
+```
 
-The ingestion subsystem includes:
+The 511,336 records therefore represent a finer analytical grain, not
+duplicate source rows.
 
-- deterministic request identifiers;
-- manifest-based provenance;
-- serialized raw API payload preservation;
-- SHA-256 integrity verification;
-- validated raw-cache reuse;
-- bounded retries with exponential backoff;
-- transformed-data validation;
-- deterministic output ordering;
-- temporary-file safe writes;
-- run-summary metadata.
+---
 
-Under the validated baseline, repeated execution produced the same
-73,048-row interim dataset with SHA-256:
+## 9. Storage Benchmarking
 
-FDAB2668F283FE9531B39506EBB4325A462D9283ED5434D1CFAA67E8D743A8B9
+HydroMet-ETL compared CSV, Parquet, and DuckDB using equivalent
+representations of the same 73,048-row wide dataset.
 
-### Week 4 — Storage Benchmarking
+Measured median results included:
 
-CSV, Parquet, and DuckDB were benchmarked using equivalent wide
-representations of the same 73,048-row dataset.
+| Format | Size | Full Load |
+|---|---:|---:|
+| CSV | 5.977 MB | 0.089954 s |
+| Parquet | 0.958 MB | 0.004449 s |
+| DuckDB wide | 1.262 MB | 0.046459 s |
 
-Final median results:
+Parquet provided substantial storage and analytical-read advantages
+for this workload.
 
-| Metric | CSV | Parquet | DuckDB Wide |
-|---|---:|---:|---:|
-| Size MB | 5.976842 | 0.957728 | 1.261719 |
-| Load s | 0.089954 | 0.004449 | 0.046459 |
-| Filter s | 0.089598 | 0.005411 | 0.014790 |
-| Aggregation s | 0.079378 | 0.012793 | 0.018984 |
+The analytical star schema was benchmarked separately because its
+observation-level grain differs from the wide physical dataset.
 
-The analytical DuckDB star schema was benchmarked separately because
-it uses a different observation-level grain.
+---
 
-## Architecture
+## 10. Cloud Analytics
 
-NASA POWER API
-    ↓
-Reproducible ingestion
-    ↓
-Serialized raw JSON + manifest + checksums
-    ↓
-Validated interim dataset
-    ↓
-Parquet + DuckDB star schema
-    ↓
-SQL / reporting / visualization / machine learning
+The project also evaluated analytical execution using Google
+BigQuery.
 
-## Setup
+A BigQuery table containing:
 
-Create and activate a virtual environment:
+```text
+73,048 rows
+```
 
-    python -m venv .venv
-    .\.venv\Scripts\Activate.ps1
+was used for validation and analytical queries.
+
+Evidence includes:
+
+- validation queries,
+- monthly precipitation analysis,
+- annual precipitation analysis,
+- full-column scan estimates,
+- projected-column scan estimates.
+
+For one demonstrated comparison, estimated bytes processed decreased
+from approximately:
+
+```text
+7.04 MB
+```
+
+for a full-column query to:
+
+```text
+1.74 MB
+```
+
+for a projected-column query.
+
+These values are interpreted as estimated bytes processed rather than
+monetary charges.
+
+---
+
+## 11. Governance and Lineage
+
+The project documents lineage from:
+
+```text
+NASA POWER
+     |
+     v
+Raw source payloads
+     |
+     v
+Interim analytical dataset
+     |
+     v
+Quality validation
+     |
+     v
+DuckDB analytical model
+     |
+     v
+Serving layer
+     |
+     v
+ML-ready datasets
+```
+
+Governance controls include:
+
+- source identification,
+- deterministic ingestion,
+- checksums,
+- quality rules,
+- validation evidence,
+- metadata,
+- documented analytical grain,
+- version-controlled code,
+- automated tests.
+
+---
+
+## 12. Analytics Serving Layer
+
+The serving layer exposes:
+
+```text
+mart_weather_daily
+```
+
+and:
+
+```text
+vw_monthly_climate_summary
+```
+
+Verified outputs:
+
+```text
+Daily mart:   73,048 rows
+Monthly view: 2,400 rows
+```
+
+The serving layer separates consumer-facing analytical structures from
+the lower-level dimensional model.
+
+---
+
+## 13. ML Data Preparation
+
+HydroMet-ETL demonstrates reproducible, leakage-aware preparation of
+time-series data for machine learning.
+
+The illustrative task is:
+
+> Use weather information available up to day t to support prediction
+> of precipitation on day t+1.
+
+Features include:
+
+- calendar features,
+- precipitation lags,
+- historical precipitation windows,
+- historical temperature windows,
+- historical humidity windows.
+
+Historical rolling features are shifted before rolling to avoid
+future-information leakage.
+
+Final ML-ready observations:
+
+```text
+72,800
+```
+
+Chronological splits:
+
+| Dataset | Rows | Period |
+|---|---:|---|
+| Train | 52,352 | 2001-01-31 to 2018-12-31 |
+| Validation | 8,768 | 2019-01-01 to 2021-12-31 |
+| Test | 11,680 | 2022-01-01 to 2025-12-30 |
+
+No random train-test shuffling is used.
+
+---
+
+## 14. Performance Optimization
+
+Performance profiling identified CSV loading as the slowest measured
+operation in the Week 10 benchmark workload.
+
+A controlled optimization converted the same 73,048-row,
+12-column dataset to Parquet and verified logical equivalence.
+
+Measured median loading time changed from:
+
+```text
+CSV:     0.085139 seconds
+Parquet: 0.004924 seconds
+```
+
+This represented:
+
+```text
+17.29x load speedup
+94.22% reduction in loading time
+```
+
+Storage changed from:
+
+```text
+CSV:     5.977 MB
+Parquet: 0.958 MB
+```
+
+representing:
+
+```text
+83.98% storage reduction
+```
+
+These results apply to the controlled dataset-loading workload and
+should not be interpreted as a 17.29x speedup of the entire pipeline.
+
+---
+
+## 15. Pipeline Orchestration
+
+The operational pipeline can be executed through:
+
+```powershell
+python -m src.orchestration.run_pipeline
+```
+
+For an existing validated local dataset:
+
+```powershell
+python -m src.orchestration.run_pipeline --skip-ingestion
+```
+
+The orchestrator provides:
+
+- ordered execution,
+- fail-fast behavior,
+- per-stage logging,
+- return-code tracking,
+- execution timing,
+- machine-readable run summaries.
+
+A verified downstream orchestration run completed successfully in:
+
+```text
+154.86 seconds
+```
+
+with six stages executed.
+
+The database-load stage required:
+
+```text
+147.60 seconds
+```
+
+and therefore dominated the measured end-to-end runtime.
+
+This has been retained as a candidate for future optimization.
+
+---
+
+## 16. Automated Testing
+
+Run:
+
+```powershell
+python -m pytest -q
+```
+
+Current verified result:
+
+```text
+65 passed in 5.51s
+```
+
+Tests cover areas including:
+
+- environment,
+- ingestion,
+- ingestion idempotency,
+- database schema,
+- database loading,
+- data quality,
+- analytics serving,
+- ML preparation,
+- optimization,
+- orchestration.
+
+---
+
+## 17. Installation
+
+Clone the repository:
+
+```powershell
+git clone https://github.com/jovinvicent10/hydromet-data-pipeline.git
+cd hydromet-data-pipeline
+```
+
+Create a virtual environment:
+
+```powershell
+python -m venv .venv
+```
+
+Activate it in PowerShell:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
 
 Install dependencies:
 
-    pip install -r requirements.txt
+```powershell
+pip install -r requirements.txt
+```
 
-## Run Ingestion
+---
 
-    python -m src.ingestion.ingest_nasa_power
+## 18. Running the Pipeline
 
-## Verify Interim Dataset
+### Full pipeline
 
-    Get-FileHash data\interim\nasa_power_tanzania_daily.csv -Algorithm SHA256
+```powershell
+python -m src.orchestration.run_pipeline
+```
 
-## Create Database
+### Use an existing ingested dataset
 
-    python -m src.database.create_database
+```powershell
+python -m src.orchestration.run_pipeline --skip-ingestion
+```
 
-## Load Database
+### Run automated tests
 
-    python -m src.database.load_duckdb
+```powershell
+python -m pytest -q
+```
 
-Expected database counts:
+---
 
-- 8 locations
-- 9,131 dates
-- 7 variables
-- 1 source
-- 511,336 observation facts
+## 19. Scheduling
 
-## Run Tests
+A Windows PowerShell launcher is provided:
 
-    pytest -v
+```text
+scripts/run_pipeline.ps1
+```
 
-Last validated result:
+It can be invoked manually:
 
-17 tests passed.
+```powershell
+.\scripts\run_pipeline.ps1
+```
 
-## Run Benchmark
+or configured with Windows Task Scheduler.
 
-    python -m src.benchmarking.benchmark_storage
+The repository is scheduler-ready, but the presence of this script
+does not by itself imply that an automatic schedule has been deployed.
 
-Benchmark outputs are written under:
+---
 
-    outputs/benchmarks/
+## 20. Handover
 
-and figures under:
+Operational documentation is available in:
 
-    outputs/figures/
+```text
+docs/orchestration_and_handover.md
+```
 
-## Important Configuration Note
+A cold-run checklist is available in:
 
-The intended project configuration and the validated Week 3 ingestion
-baseline contain small coordinate differences for Morogoro and Songea.
+```text
+docs/cold_run_checklist.md
+```
 
-Because coordinates contribute to deterministic request IDs and may
-affect dataset fingerprints, these coordinates should not be silently
-changed. A future controlled migration should establish one canonical
-configuration, regenerate affected request IDs and raw acquisitions,
-rebuild downstream datasets, rerun tests, and establish a new validated
-baseline.
+The cold-run procedure is intended to determine whether another team
+member can operate the repository without undocumented assistance from
+the original developer.
 
-## Current Limitations
+---
 
-- Eight point locations do not provide full gridded coverage of Tanzania.
-- NASA POWER is currently the only implemented data source.
-- Full rerun/hash idempotency evidence has been demonstrated manually
-  but should be converted into an automated integration test.
-- The current observation ID strategy is appropriate for controlled
-  batch loading but should be strengthened for concurrent/incremental
-  production workloads.
+## 21. Key Engineering Lessons
 
-## Future Development
+HydroMet-ETL demonstrates that a data engineering project is more than
+data collection.
 
-Priority future work includes:
+The project integrates:
 
-1. canonical configuration consolidation;
-2. CHIRPS integration;
-3. multi-source harmonization;
-4. automated cross-source QA;
-5. incremental ingestion;
-6. partitioned Parquet storage at larger scale;
-7. orchestration and monitoring when justified;
-8. reproducible ML dataset generation.
+```text
+Source acquisition
+        +
+Reproducibility
+        +
+Data quality
+        +
+Storage design
+        +
+Analytical modeling
+        +
+Performance
+        +
+Cloud analytics
+        +
+Governance
+        +
+Serving
+        +
+ML preparation
+        +
+Testing
+        +
+Orchestration
+        +
+Handover
+```
 
+The result is a reproducible analytical data pipeline rather than a
+collection of disconnected scripts.
 
+---
 
-## Week 5 — Cloud Data Engineering
+## 22. Known Limitations
 
-Week 5 extended HydroMet-ETL into a cloud analytical environment
-using the BigQuery Sandbox.
+Current limitations include:
 
-### BigQuery Environment
+1. The dataset represents eight configured point locations rather than
+   complete spatial coverage of Tanzania.
 
-Project:
+2. The pipeline currently depends primarily on NASA POWER as its
+   meteorological source.
 
-`hydromet-etl`
+3. Statistical extremes require contextual interpretation rather than
+   automatic removal.
 
-Dataset:
+4. Fresh source ingestion depends on external API availability and
+   network access.
 
-`hydromet`
+5. The dimensional database-load stage dominates the observed
+   downstream orchestration runtime.
 
-Table:
+6. Scheduling support has been prepared, but deployment frequency
+   depends on operational requirements.
 
-`nasa_power_daily`
+---
 
-The uploaded table was validated using SQL and produced:
+## 23. Future Work
 
-- 73,048 rows
-- 8 locations
-- start date: 2001-01-01
-- end date: 2025-12-31
+Potential extensions include:
 
-These results agree with the validated local dataset.
+- incremental ingestion,
+- changed-data detection,
+- incremental DuckDB loading,
+- additional meteorological sources,
+- CHIRPS precipitation integration,
+- gridded spatial datasets,
+- automated cloud ingestion,
+- workflow monitoring and alerting,
+- CI/CD,
+- containerization,
+- richer metadata/catalog integration,
+- expanded agricultural analytics,
+- production ML pipelines.
 
-### Cloud Aggregate Query
+---
 
-Monthly mean daily precipitation was calculated by:
+## 24. Course Context
 
-- location
-- year
-- month
+This project was developed as part of:
 
-The query produced 2,400 grouped records.
+**DSAI 6226 — Data Engineering and Analytics**
 
-Estimated bytes processed:
+MSc Data Science and Artificial Intelligence
 
-`1.74 MB`
+The Nelson Mandela African Institution of Science and Technology (NM-AIST)
 
-### Query Cost Experiment
-
-A full-table query using:
-
-```sql
-SELECT *
-FROM `hydromet-etl.hydromet.nasa_power_daily`;
-
-
-## Week 6 — Validation checks 
-
-### Validated Unit 6 Results
-
-The strict-baseline quality validation was executed using:
-
-```bash
-python -m src.quality.validate_hydromet --strict-baseline
+The project demonstrates the progressive application of data engineering concepts across the semester.
